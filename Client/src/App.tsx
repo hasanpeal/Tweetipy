@@ -1,28 +1,26 @@
 import "./App.css";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "./components/ui/card";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Login from "./components/Login";
 
 function App() {
   return (
-    <div>
-      <Card>
-        <CardHeader>
-          <CardTitle>Card Title</CardTitle>
-          <CardDescription>Card Description</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p>Card Content</p>
-        </CardContent>
-        <CardFooter>
-          <p>Card Footer</p>
-        </CardFooter>
-      </Card>
+    <div className="App">
+      <Router>
+        <Routes>
+          <Route path="/" element={<Login />}>
+            {" "}
+          </Route>
+          {/* <Route path="/login" element={<Login />}>
+            {" "}
+          </Route>
+          <Route path="/signup" element={<Signup />}>
+            {" "}
+          </Route>
+          <Route path="/todo" element={<Todo />}>
+            {" "}
+          </Route> */}
+        </Routes>
+      </Router>
     </div>
   );
 }

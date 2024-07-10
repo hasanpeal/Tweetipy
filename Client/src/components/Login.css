@@ -1,0 +1,35 @@
+.mainContainer{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.cardDiv{
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    justify-content: center;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.forgetLink{
+    text-align: center;
+}
+
+.xLogo{
+    width: 15px;
+}
+
+p{
+    text-align: center;
+    padding-bottom: 20px;
+}
+
+.headText{
+    justify-content: center;
+    margin-bottom: -30px;
+}
+
