@@ -6,7 +6,7 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   twitterProfiles: { type: [String], default: [] },
-  emailTime: { type: String, required: true },
+  emailTime: { type: String },
   podcastFile: { type: String },
 });
 

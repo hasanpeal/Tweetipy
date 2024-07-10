@@ -1,4 +1,5 @@
 import User from "../models/user";
+import db from "../db";
 import bcrypt from "bcrypt";
 
 // Registers new user
@@ -11,7 +12,8 @@ export async function registerUser(
   try {
     const saltRounds = process.env.SALT_ROUNDS;
     const hashedPass = await bcrypt.hash(password, Number(saltRounds));
-    const user = new User({ firstName, lastName, email, hashedPass });
+    console.log(hashedPass);
+    const user = new User({ firstName, lastName, email, password: hashedPass });
     await user.save();
     return user;
   } catch (err) {
@@ -83,10 +85,4 @@ export async function findUser(email: string) {
   } catch (error) {
     console.log("Email not found: findUser function in uberServices.ts");
   }
-}
-
-// Performing check if .env variables getting retrived
-export function jestTest() {
-  const saltRounds = process.env.SALT_ROUNDS;
-  return Number(saltRounds);
 }

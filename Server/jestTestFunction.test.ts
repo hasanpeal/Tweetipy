@@ -1,10 +1,10 @@
-import { jestTest } from "./database/services/userServices";
+import jestTest from "./database/db";
 import dotenv from "dotenv";
 dotenv.config();
 
 describe("jestTest", () => {
   it("should return the correct number from environment variable", () => {
-    const result = jestTest();
-    expect(result).toBe(17);
+    const res = jestTest;
+    expect(res).toBe("pealh0320 245810");
   });
 });
