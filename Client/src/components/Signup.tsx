@@ -1,7 +1,7 @@
 "use client";
 import "./Login.css";
 
-function Login() {
+function Signup() {
   return (
     <div className="mainContainer">
       <div className="card bg-base-100 w-96 shadow-xl cardDiv">
@@ -13,8 +13,21 @@ function Login() {
             width="20"
             height="20"
           ></img>
-          <span> </span>
+          <span></span>
         </article>
+
+        <div>
+          <label className="input input-bordered flex items-center gap-2">
+            <input type="text" className="grow" placeholder="First Name" />
+          </label>
+        </div>
+
+        <div>
+          <label className="input input-bordered flex items-center gap-2">
+            <input type="text" className="grow" placeholder="Last Name" />
+          </label>
+        </div>
+
         <div>
           <label className="input input-bordered flex items-center gap-2">
             <svg
@@ -47,11 +60,10 @@ function Login() {
             <input type="password" className="grow" placeholder="Password" />
           </label>
         </div>
-        <a className="link link-primary forgetLink">Forget Password</a>
 
-        <button className="btn btn-primary btnSubmit">Login</button>
+        <button className="btn btn-primary btnSubmit">Sign up</button>
         <button className="btn btn-outline btn-primary whiteText">
-          Login with{" "}
+          Sign up with{" "}
           <img
             src="https://cdn.prod.website-files.com/5d66bdc65e51a0d114d15891/64cebe1d31f50e161e4c825a_X-logo-transparent-white-twitter.png"
             className="xLogo"
@@ -59,12 +71,12 @@ function Login() {
         </button>
         <p>
           {" "}
-          Don't have an account?{" "}
-          <a className="link link-primary forgetLink">Sign up</a>
+          Already have an account?{" "}
+          <a className="link link-primary forgetLink">Sign in</a>
         </p>
       </div>
     </div>
   );
 }
 
-export default Login;
+export default Signup;
