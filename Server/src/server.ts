@@ -3,12 +3,12 @@ import bodyParser from "body-parser";
 import { dirname } from "path";
 import { fileURLToPath } from "url";
 import env from "dotenv";
-import bcrypt from "bcrypt";
 import passport from "passport";
 import { Strategy } from "passport-local";
 import session from "express-session";
 import flash from "connect-flash";
 import cors from "cors";
+import sgMail from "@sendgrid/mail";
 import db from "../database/db";
 import {
   registerUser,
@@ -16,6 +16,7 @@ import {
   updateTime,
   updatePodcastFile,
   findUser,
+  updatePassword,
 } from "../database/services/userServices";
 
 env.config();
@@ -105,6 +106,62 @@ app.post("/updatePodcast", async (req, res) => {
     }
   }
 });
+
+// POST Route for sending OTP
+app.post("/sentOTP", async (req, res) => {
+  console.log("Directed to POST Route -> /sentOTP");
+  const email = req.body.email;
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+  const msg = {
+    to: email,
+    from: "tweetipyinquires@gmail.com",
+    subject: "Your Tweetipy OTP Code is here",
+    text: `Your OTP code is ${otp}`,
+    html: `<strong> Welcome to Tweetipy. Your OTP code is ${otp}</strong>`,
+  };
+  sgMail
+    .send(msg)
+    .then(async () => {
+      res.status(200).send({ code: 0, otp: otp });
+    })
+    .catch((error) => {
+      console.log("Error sending OTP email on /sentOTP route");
+      res.status(500).send({ code: 1 });
+    });
+});
+
+// POST Route for reseting password
+app.post("/resetPassword", async (req, res) => {
+  console.log("Directed to POST Route -> /resetPassword");
+  const { email, newPassword } = req.body;
+  let connection = await db;
+  const user = await findUser(email);
+  if (!user) {
+    res.status(200).json({ code: 1, message: "User doesn't exist" });
+  } else {
+    try {
+      await updatePassword(email, newPassword);
+    } catch (err) {
+      console.log("Error updating password on /resetPassword route");
+    }
+  }
+});
+
+// GET route for validating email
+app.get("/validateEmail", async (req, res) => {
+  console.log("Directed to GET Route -> /validateEmail");
+  const email = req.body.email;
+  let connection = await db;
+  const user = await findUser(email);
+  if (!user) {
+    res.status(200).json({ code: 1 });
+  } else {
+      res.status(200).json({ code: 0 });
+      console.log("Error validating email on /validateEmail route");
+    }
+  }
+)
 
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);

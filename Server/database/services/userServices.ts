@@ -77,6 +77,28 @@ export async function updatePodcastFile(email: string, newPodcastFile: string) {
   }
 }
 
+// Update users password
+export async function updatePassword(email: string, newPassword: string) {
+  try {
+    const user = await User.findOne({ email }).exec();
+    if (!user) {
+      console.log(
+        "User not found: updatePassword function in userServices.ts"
+      );
+    } else {
+      const saltRounds = process.env.SALT_ROUNDS;
+      const hashedPass = await bcrypt.hash(newPassword, Number(saltRounds));
+      user.password = hashedPass;
+      await user.save();
+      return user;
+    }
+  } catch (error) {
+    console.log(
+      "Error updating users password: updatePassword function in userService.ts"
+    );
+  }
+}
+
 // Validate User by Email
 export async function findUser(email: string) {
   try {
