@@ -11,6 +11,10 @@
   border-radius: 4px;
 }
 
+.alertText{
+    margin-bottom: -20px;
+}
+
 .verifyBtn{
     margin-top: 25px;
     display: flex;

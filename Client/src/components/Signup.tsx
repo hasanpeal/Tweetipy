@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useRef, ChangeEvent, KeyboardEvent } from "react";
+import React, { useState, useRef, KeyboardEvent } from "react";
 import "./Login.css";
 
 const Signup: React.FC = () => {
@@ -11,6 +11,12 @@ const Signup: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [otp, setOtp] = useState<string[]>(Array(6).fill(""));
   const [otpError, setOtpError] = useState(false);
+  const [formErrors, setFormErrors] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+  });
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   const handleOtpChange = (index: number, value: string) => {
@@ -39,6 +45,71 @@ const Signup: React.FC = () => {
     }
   };
 
+  const validateForm = () => {
+    const errors = {
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+    };
+    let isValid = true;
+
+    if (!firstName) {
+      errors.firstName = "First name is required";
+      isValid = false;
+      setTimeout(() => {
+        setFormErrors((prevErrors) => ({ ...prevErrors, firstName: "" }));
+      }, 3000);
+    }
+    if (!lastName) {
+      errors.lastName = "Last name is required";
+      isValid = false;
+      setTimeout(() => {
+        setFormErrors((prevErrors) => ({ ...prevErrors, lastName: "" }));
+      }, 3000);
+    }
+    if (!email) {
+      errors.email = "Email is required";
+      isValid = false;
+      setTimeout(() => {
+        setFormErrors((prevErrors) => ({ ...prevErrors, email: "" }));
+      }, 3000);
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      errors.email = "Not a valid email";
+      isValid = false;
+      setTimeout(() => {
+        setFormErrors((prevErrors) => ({ ...prevErrors, email: "" }));
+      }, 3000);
+    }
+    if (!password) {
+      errors.password = "Password is required";
+      isValid = false;
+      setTimeout(() => {
+        setFormErrors((prevErrors) => ({ ...prevErrors, password: "" }));
+      }, 3000);
+    } else if (
+      password.length < 8 ||
+      !/[a-zA-Z]/.test(password) ||
+      !/[0-9]/.test(password)
+    ) {
+      errors.password =
+        "Password must be at least 8 characters long and include a letter and a number";
+      isValid = false;
+      setTimeout(() => {
+        setFormErrors((prevErrors) => ({ ...prevErrors, password: "" }));
+      }, 3000);
+    }
+    setFormErrors(errors);
+    return isValid;
+  };
+
+  const handleSignup = () => {
+    if (validateForm()) {
+      generateOtp();
+      setFlag(false);
+    }
+  };
+
   const handleOtpVerify = () => {
     if (otp.includes("")) {
       setOtpError(true);
@@ -46,11 +117,14 @@ const Signup: React.FC = () => {
       setOtpError(false);
       // Implement OTP verification logic here
       console.log("OTP entered:", otp.join(""));
+      console.log("\nFirst name:", firstName);
+      console.log("\nLast name:", lastName);
+      console.log("\nEmail:", email);
+      console.log("\nPassword:", password);
     }
   };
 
   const generateOtp = () => {
-    setFlag(false);
     // Implement OTP generation logic here
     console.log("OTP generated");
   };
@@ -73,24 +147,30 @@ const Signup: React.FC = () => {
           <label className="input input-bordered flex items-center gap-2">
             <input
               type="text"
-              className="grow"
+              className={`grow ${formErrors.firstName ? "border-red-500" : ""}`}
               placeholder="First Name"
               value={firstName}
               onChange={(event) => setFirstName(event.target.value)}
             />
           </label>
+          {formErrors.firstName && (
+            <p className="alertText text-red-500">{formErrors.firstName}</p>
+          )}
         </div>
 
         <div>
           <label className="input input-bordered flex items-center gap-2">
             <input
               type="text"
-              className="grow"
+              className={`grow ${formErrors.lastName ? "border-red-500" : ""}`}
               placeholder="Last Name"
               value={lastName}
               onChange={(event) => setLastName(event.target.value)}
             />
           </label>
+          {formErrors.lastName && (
+            <p className="alertText text-red-500">{formErrors.lastName}</p>
+          )}
         </div>
 
         <div>
@@ -106,12 +186,15 @@ const Signup: React.FC = () => {
             </svg>
             <input
               type="email"
-              className="grow"
+              className={`grow ${formErrors.email ? "border-red-500" : ""}`}
               placeholder="Email"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
             />
           </label>
+          {formErrors.email && (
+            <p className="alertText text-red-500">{formErrors.email}</p>
+          )}
         </div>
 
         <div>
@@ -130,7 +213,7 @@ const Signup: React.FC = () => {
             </svg>
             <input
               type={showPassword ? "text" : "password"}
-              className="grow"
+              className={`grow ${formErrors.password ? "border-red-500" : ""}`}
               placeholder="Password"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
@@ -139,17 +222,22 @@ const Signup: React.FC = () => {
               className="btn btn-ghost showBtn"
               onClick={() => setShowPassword(!showPassword)}
             >
+              
               <img
                 src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIHN0eWxlPSJjb2xvcjojODA1MkY2IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGNsYXNzPSJoLWZ1bGwgdy1mdWxsIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgeD0iMCIgeT0iMCIgcng9IjMwIiBmaWxsPSJ0cmFuc3BhcmVudCIgc3Ryb2tlPSJ0cmFuc3BhcmVudCIgc3Ryb2tlLXdpZHRoPSIwIiBzdHJva2Utb3BhY2l0eT0iMTAwJSIgcGFpbnQtb3JkZXI9InN0cm9rZSI+PC9yZWN0Pjxzdmcgd2lkdGg9IjI1NnB4IiBoZWlnaHQ9IjI1NnB4IiB2aWV3Qm94PSIwIDAgMTAyNCAxMDI0IiBmaWxsPSIjODA1MkY2IiB4PSIxMjgiIHk9IjEyOCIgcm9sZT0iaW1nIiBzdHlsZT0iZGlzcGxheTppbmxpbmUtYmxvY2s7dmVydGljYWwtYWxpZ246bWlkZGxlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxnIGZpbGw9IiM4MDUyRjYiPjxwYXRoIGZpbGw9ImN1cnJlbnRDb2xvciIgZmlsbC1vcGFjaXR5PSIuMTUiIGQ9Ik04MS44IDUzNy44YTYwLjMgNjAuMyAwIDAgMSAwLTUxLjVDMTc2LjYgMjg2LjUgMzE5LjggMTg2IDUxMiAxODZjLTE5Mi4yIDAtMzM1LjQgMTAwLjUtNDMwLjIgMzAwLjNhNjAuMyA2MC4zIDAgMCAwIDAgNTEuNUMxNzYuNiA3MzcuNSAzMTkuOSA4MzggNTEyIDgzOGMtMTkyLjEgMC0zMzUuNC0xMDAuNS00MzAuMi0zMDAuMnoiPjwvcGF0aD48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGZpbGwtb3BhY2l0eT0iLjE1IiBkPSJNNTEyIDI1OGMtMTYxLjMgMC0yNzkuNCA4MS44LTM2Mi43IDI1NEMyMzIuNiA2ODQuMiAzNTAuNyA3NjYgNTEyIDc2NmMxNjEuNCAwIDI3OS41LTgxLjggMzYyLjctMjU0Qzc5MS40IDMzOS44IDY3My4zIDI1OCA1MTIgMjU4em0tNCA0MzBjLTk3LjIgMC0xNzYtNzguOC0xNzYtMTc2czc4LjgtMTc2IDE3Ni0xNzZzMTc2IDc4LjggMTc2IDE3NnMtNzguOCAxNzYtMTc2IDE3NnoiPjwvcGF0aD48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik05NDIuMiA0ODYuMkM4NDcuNCAyODYuNSA3MDQuMSAxODYgNTEyIDE4NmMtMTkyLjIgMC0zMzUuNCAxMDAuNS00MzAuMiAzMDAuM2E2MC4zIDYwLjMgMCAwIDAgMCA1MS41QzE3Ni42IDczNy41IDMxOS45IDgzOCA1MTIgODM4YzE5Mi4yIDAgMzM1LjQtMTAwLjUgNDMwLjItMzAwLjNjNy43LTE2LjIgNy43LTM1IDAtNTEuNXpNNTEyIDc2NmMtMTYxLjMgMC0yNzkuNC04MS44LTM2Mi43LTI1NEMyMzIuNiAzMzkuOCAzNTAuNyAyNTggNTEyIDI1OHMyNzkuNCA4MS44IDM2Mi43IDI1NEM3OTEuNSA2ODQuMiA2NzMuNCA3NjYgNTEyIDc2NnoiPjwvcGF0aD48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik01MDggMzM2Yy05Ny4yIDAtMTc2IDc4LjgtMTc2IDE3NnM3OC44IDE3NiAxNzYgMTc2czE3Ni03OC44IDE3Ni0xNzZzLTc4LjgtMTc2LTE3Ni0xNzZ6bTAgMjg4Yy02MS45IDAtMTEyLTUwLjEtMTEyLTExMnM1MC4xLTExMiAxMTItMTEyczExMiA1MC4xIDExMiAxMTJzLTUwLjEgMTEyLTExMiAxMTJ6Ij48L3BhdGg+PC9nPjwvc3ZnPjwvc3ZnPg=="
                 alt="eye-twotone"
                 className="showIcon"
               ></img>
+    
             </button>
           </label>
+          {formErrors.password && (
+            <p className="alertText text-red-500">{formErrors.password}</p>
+          )}
         </div>
 
         {flag && (
-          <button className="btn btn-primary btnSubmit" onClick={generateOtp}>
+          <button className="btn btn-primary btnSubmit" onClick={handleSignup}>
             Sign up
           </button>
         )}
@@ -218,3 +306,7 @@ export default Signup;
 }
 
 // Thats it
+// console.log("\nFirst name:", firstName);
+// console.log("\nLast name:", lastName);
+// console.log("\nEmail:", email);
+// console.log("\nPassword:", password);
