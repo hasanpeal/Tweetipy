@@ -1,5 +1,74 @@
 @import url("https://fonts.googleapis.com/css?family=Open+Sans:300,400,700");
 
+.customLabel{
+    margin-bottom: -10px;
+}
+
+/* Hide the default appearance of the time input */
+input[type="time"]::-webkit-calendar-picker-indicator {
+    display: none;
+    -webkit-appearance: none;
+}
+
+.searchBox{
+    margin-bottom: 10px;
+}
+.contBtn{
+    margin-bottom: 30px;
+}
+
+.userBox {
+  background-color: #646EE4;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-right: 4px;
+  display: flex;
+  align-items: center;
+  margin-top: 15px;
+}
+
+.removeBtn {
+  background: none;
+  border: none;
+  color: black;
+  margin-left: 4px;
+  cursor: pointer;
+}
+
+.searchBox {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+}
+
+.input {
+  flex: 1;
+  min-width: 100px;
+  overflow: hidden;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.dropdown-content {
+  max-height: 150px;
+  overflow-y: auto;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 4px;
+}
+
+.userInput{
+    padding: 10px;
+    width: 320px;
+}
+
+
+
 .mainContainer{
     display: flex;
     flex-direction: column;
