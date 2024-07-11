@@ -4,6 +4,39 @@
     margin-bottom: -10px;
 }
 
+.otpInput{
+  background-color: #1D232A;
+  border: 2px solid #646EE4;
+  text-align: center;
+  border-radius: 4px;
+}
+
+.verifyBtn{
+    margin-top: 25px;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 25px;
+}
+.otpBox{
+    display: flex;
+    flex: 1;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.showBtn{
+    margin: -17px;
+}
+
+.showIcon{
+    width: 40px;
+    height: 40px;
+}
+
+.showImg{
+    height: 25px;
+    width: 25px;
+}
 /* Hide the default appearance of the time input */
 input[type="time"]::-webkit-calendar-picker-indicator {
     display: none;
