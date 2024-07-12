@@ -1,5 +1,6 @@
 "use client";
-import { useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import React, { useState, useRef, KeyboardEvent } from "react";
 import "./Login.css";
 
@@ -12,6 +13,9 @@ const Signup: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [otp, setOtp] = useState<string[]>(Array(6).fill(""));
   const [otpError, setOtpError] = useState(false);
+  const [generatedOtp, setGeneratedOtp] = useState("");
+  const [verified, setVerified] = useState(false);
+  const [load, setLoad] = useState(false);
   const [formErrors, setFormErrors] = useState({
     firstName: "",
     lastName: "",
@@ -20,8 +24,6 @@ const Signup: React.FC = () => {
   });
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
   const navigate = useNavigate();
-  const location = useLocation();
-  // let generatedOtp = "";
 
   const handleOtpChange = (index: number, value: string) => {
     if (/^[0-9]$/.test(value)) {
@@ -49,7 +51,21 @@ const Signup: React.FC = () => {
     }
   };
 
-  const validateForm = () => {
+  async function emailAlreadyExist() {
+    try {
+      const result = await axios.get("http://localhost:3001/validateEmail", {
+        params: { email: email },
+      });
+      const code = result.data.code;
+      console.log(code);
+      if (code === 0) return true;
+      else false;
+    } catch (err) {
+      console.log("Error in emailAlreadyExist function");
+    }
+  }
+
+  const validateForm = async () => {
     const errors = {
       firstName: "",
       lastName: "",
@@ -84,6 +100,12 @@ const Signup: React.FC = () => {
       setTimeout(() => {
         setFormErrors((prevErrors) => ({ ...prevErrors, email: "" }));
       }, 3000);
+    } else if (await emailAlreadyExist()) {
+      errors.email = "Email already registered";
+      isValid = false;
+      setTimeout(() => {
+        setFormErrors((prevErrors) => ({ ...prevErrors, email: "" }));
+      }, 3000);
     }
     if (!password) {
       errors.password = "Password is required";
@@ -107,19 +129,42 @@ const Signup: React.FC = () => {
     return isValid;
   };
 
-  const handleSignup = () => {
-    if (validateForm()) {
+  const handleSignup = async () => {
+    if (await validateForm()) {
       generateOtp();
       setFlag(false);
     }
   };
 
-  const handleOtpVerify = () => {
+  const handleOtpVerify = async () => {
     if (otp.includes("")) {
       setOtpError(true);
     } else {
       setOtpError(false);
-      // Implement OTP verification logic here
+
+      if (generatedOtp === otp.join("")) {
+        try {
+          setLoad(true);
+          const result = await axios.post("http://localhost:3001/register", {
+            firstName,
+            lastName,
+            email,
+            password,
+          });
+          
+          if(result){
+            navigate("/newuser");
+          }
+        } catch (error) {
+          console.log("Error registering user froms signup.tsx");
+        }
+        
+      } else {
+        setVerified(true);
+        setTimeout(() => {
+          setVerified(false);
+        }, 3000);
+      }
       console.log("OTP entered:", otp.join(""));
       console.log("\nFirst name:", firstName);
       console.log("\nLast name:", lastName);
@@ -128,8 +173,15 @@ const Signup: React.FC = () => {
     }
   };
 
-  const generateOtp = () => {
-    // Implement OTP generation logic here
+  const generateOtp = async () => {
+    try {
+      const result = await axios.post("http://localhost:3001/sentOTP", {
+        email: email,
+      });
+      setGeneratedOtp(result.data.otp);
+    } catch (error) {
+      console.log("Error calling http://localhost:3000/sentOTP on signup.tsx");
+    }
     console.log("OTP generated");
   };
 
@@ -239,10 +291,7 @@ const Signup: React.FC = () => {
         </div>
 
         {flag && (
-          <button
-            className="btn btn-primary btnSubmit "
-            onClick={handleSignup}
-          >
+          <button className="btn btn-primary btnSubmit " onClick={handleSignup}>
             Sign up
           </button>
         )}
@@ -261,7 +310,12 @@ const Signup: React.FC = () => {
           <p>
             {" "}
             Already have an account?{" "}
-            <a className="link link-primary forgetLink" onClick={()=> navigate("/login")}>Sign in</a>
+            <a
+              className="link link-primary forgetLink"
+              onClick={() => navigate("/login")}
+            >
+              Sign in
+            </a>
           </p>
         )}
 
@@ -283,6 +337,14 @@ const Signup: React.FC = () => {
                   ref={(el) => (otpRefs.current[index] = el)}
                 />
               ))}
+
+              {verified && (
+                <p className="alertText text-red-500 customAlert"> Wrong OTP</p>
+              )}
+
+              {load && (
+                <span className="loading loading-spinner text-primary Load"></span>
+              )}
             </div>
 
             <div className="verifyBtn">
@@ -301,17 +363,3 @@ const Signup: React.FC = () => {
 };
 
 export default Signup;
-
-{
-  /* <img
-                src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIHN0eWxlPSJjb2xvcjojODA1MkY2IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGNsYXNzPSJoLWZ1bGwgdy1mdWxsIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgeD0iMCIgeT0iMCIgcng9IjMwIiBmaWxsPSJ0cmFuc3BhcmVudCIgc3Ryb2tlPSJ0cmFuc3BhcmVudCIgc3Ryb2tlLXdpZHRoPSIwIiBzdHJva2Utb3BhY2l0eT0iMTAwJSIgcGFpbnQtb3JkZXI9InN0cm9rZSI+PC9yZWN0Pjxzdmcgd2lkdGg9IjI1NnB4IiBoZWlnaHQ9IjI1NnB4IiB2aWV3Qm94PSIwIDAgMTAyNCAxMDI0IiBmaWxsPSIjODA1MkY2IiB4PSIxMjgiIHk9IjEyOCIgcm9sZT0iaW1nIiBzdHlsZT0iZGlzcGxheTppbmxpbmUtYmxvY2s7dmVydGljYWwtYWxpZ246bWlkZGxlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxnIGZpbGw9IiM4MDUyRjYiPjxwYXRoIGZpbGw9ImN1cnJlbnRDb2xvciIgZmlsbC1vcGFjaXR5PSIuMTUiIGQ9Ik04MS44IDUzNy44YTYwLjMgNjAuMyAwIDAgMSAwLTUxLjVDMTc2LjYgMjg2LjUgMzE5LjggMTg2IDUxMiAxODZjLTE5Mi4yIDAtMzM1LjQgMTAwLjUtNDMwLjIgMzAwLjNhNjAuMyA2MC4zIDAgMCAwIDAgNTEuNUMxNzYuNiA3MzcuNSAzMTkuOSA4MzggNTEyIDgzOGMtMTkyLjEgMC0zMzUuNC0xMDAuNS00MzAuMi0zMDAuMnoiPjwvcGF0aD48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGZpbGwtb3BhY2l0eT0iLjE1IiBkPSJNNTEyIDI1OGMtMTYxLjMgMC0yNzkuNCA4MS44LTM2Mi43IDI1NEMyMzIuNiA2ODQuMiAzNTAuNyA3NjYgNTEyIDc2NmMxNjEuNCAwIDI3OS41LTgxLjggMzYyLjctMjU0Qzc5MS40IDMzOS44IDY3My4zIDI1OCA1MTIgMjU4em0tNCA0MzBjLTk3LjIgMC0xNzYtNzguOC0xNzYtMTc2czc4LjgtMTc2IDE3Ni0xNzZzMTc2IDc4LjggMTc2IDE3NnMtNzguOCAxNzYtMTc2IDE3NnoiPjwvcGF0aD48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik05NDIuMiA0ODYuMkM4NDcuNCAyODYuNSA3MDQuMSAxODYgNTEyIDE4NmMtMTkyLjIgMC0zMzUuNCAxMDAuNS00MzAuMiAzMDAuM2E2MC4zIDYwLjMgMCAwIDAgMCA1MS41QzE3Ni42IDczNy41IDMxOS45IDgzOCA1MTIgODM4YzE5Mi4yIDAgMzM1LjQtMTAwLjUgNDMwLjItMzAwLjNjNy43LTE2LjIgNy43LTM1IDAtNTEuNXpNNTEyIDc2NmMtMTYxLjMgMC0yNzkuNC04MS44LTM2Mi43LTI1NEMyMzIuNiAzMzkuOCAzNTAuNyAyNTggNTEyIDI1OHMyNzkuNCA4MS44IDM2Mi43IDI1NEM3OTEuNSA2ODQuMiA2NzMuNCA3NjYgNTEyIDc2NnoiPjwvcGF0aD48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik01MDggMzM2Yy05Ny4yIDAtMTc2IDc4LjgtMTc2IDE3NnM3OC44IDE3NiAxNzYgMTc2czE3Ni03OC44IDE3Ni0xNzZzLTc4LjgtMTc2LTE3Ni0xNzZ6bTAgMjg4Yy02MS45IDAtMTEyLTUwLjEtMTEyLTExMnM1MC4xLTExMiAxMTItMTEyczExMiA1MC4xIDExMiAxMTJzLTUwLjEgMTEyLTExMiAxMTJ6Ij48L3BhdGg+PC9nPjwvc3ZnPjwvc3ZnPg=="
-                alt="eye-twotone"
-                className="showIcon"
-              ></img> */
-}
-
-// Thats it
-// console.log("\nFirst name:", firstName);
-// console.log("\nLast name:", lastName);
-// console.log("\nEmail:", email);
-// console.log("\nPassword:", password);

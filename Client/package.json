@@ -17,6 +17,7 @@
     "@mui/icons-material": "^5.16.0",
     "@mui/joy": "^5.0.0-beta.47",
     "@tailwindcss/typography": "^0.5.13",
+    "axios": "^1.7.2",
     "bootstrap": "^5.3.3",
     "grommet": "^2.39.0",
     "grommet-icons": "^4.12.1",

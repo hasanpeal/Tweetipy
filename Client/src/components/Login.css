@@ -1,61 +1,72 @@
 @import url("https://fonts.googleapis.com/css?family=Open+Sans:300,400,700");
 
-.customLabel{
-    margin-bottom: -10px;
+.customLabel {
+  margin-bottom: -10px;
 }
 
-.otpInput{
-  background-color: #1D232A;
-  border: 2px solid #646EE4;
+.Load {
+  margin-top: 7px;
+  margin-left: 46.5%;
+  margin-bottom: -5px;
+}
+
+.otpInput {
+  background-color: #1d232a;
+  border: 2px solid #646ee4;
   text-align: center;
   border-radius: 4px;
 }
 
-.alertText{
-    margin-bottom: -20px;
+.customAlert {
+  padding-left: 38%;
 }
 
-.verifyBtn{
-    margin-top: 25px;
-    display: flex;
-    justify-content: center;
-    margin-bottom: 25px;
-}
-.otpBox{
-    display: flex;
-    flex: 1;
-    flex-wrap: wrap;
-    gap: 10px;
+.alertText {
+  margin-bottom: -20px;
+  text-align: center;
 }
 
-.showBtn{
-    margin: -17px;
+.verifyBtn {
+  margin-top: 25px;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 25px;
+}
+.otpBox {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
-.showIcon{
-    width: 40px;
-    height: 40px;
+.showBtn {
+  margin: -17px;
 }
 
-.showImg{
-    height: 25px;
-    width: 25px;
+.showIcon {
+  width: 40px;
+  height: 40px;
+}
+
+.showImg {
+  height: 25px;
+  width: 25px;
 }
 /* Hide the default appearance of the time input */
 input[type="time"]::-webkit-calendar-picker-indicator {
-    display: none;
-    -webkit-appearance: none;
+  display: none;
+  -webkit-appearance: none;
 }
 
-.searchBox{
-    margin-bottom: 10px;
+.searchBox {
+  margin-bottom: 10px;
 }
-.contBtn{
-    margin-bottom: 30px;
+.contBtn {
+  margin-bottom: 30px;
 }
 
 .userBox {
-  background-color: #646EE4;
+  background-color: #646ee4;
   color: white;
   padding: 2px 8px;
   border-radius: 4px;
@@ -99,46 +110,43 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   margin-top: 4px;
 }
 
-.userInput{
-    padding: 10px;
-    width: 320px;
+.userInput {
+  padding: 10px;
+  width: 320px;
 }
 
-
-
-.mainContainer{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    /* font-family: "Open Sans", sans-serif; */
+.mainContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  /* font-family: "Open Sans", sans-serif; */
 }
 
-.cardDiv{
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    justify-content: center;
-    padding-left: 15px;
-    padding-right: 15px;
+.cardDiv {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  justify-content: center;
+  padding-left: 15px;
+  padding-right: 15px;
 }
 
-.forgetLink{
-    text-align: center;
+.forgetLink {
+  text-align: center;
 }
 
-.xLogo{
-    width: 15px;
+.xLogo {
+  width: 15px;
 }
 
-p{
-    text-align: center;
-    padding-bottom: 20px;
+p {
+  text-align: center;
+  padding-bottom: 20px;
 }
 
-.headText{
-    justify-content: center;
-    margin-bottom: -30px;
+.headText {
+  justify-content: center;
+  margin-bottom: -30px;
 }
-

@@ -18,7 +18,7 @@ export async function registerUser(
     return user;
   } catch (err) {
     console.log(
-      "Error in registration: registerUser function in userServices.ts"
+      "Error in registration: registerUser function in userServices.ts", err
     );
   }
 }

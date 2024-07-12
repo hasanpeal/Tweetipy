@@ -22,12 +22,13 @@ import {
 env.config();
 const app = express();
 const port = process.env.PORT;
+sgMail.setApiKey(process.env.SENDGRID_API_KEY || "");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.use(
   cors({
-    origin: "process.env.ORIGIN",
+    origin: process.env.ORIGIN,
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     credentials: true,
   })
@@ -47,6 +48,7 @@ app.post("/register", async (req, res) => {
   } else {
     try {
       await registerUser(firstName, lastName, email, password);
+      res.status(200).json({ code: 1, message: "User added successfully" });
     } catch (err) {
       console.log("Error registering user on /register route");
     }
@@ -120,9 +122,10 @@ app.post("/sentOTP", async (req, res) => {
     text: `Your OTP code is ${otp}`,
     html: `<strong> Welcome to Tweetipy. Your OTP code is ${otp}</strong>`,
   };
-  sgMail
+  await sgMail
     .send(msg)
     .then(async () => {
+      console.log("OTP successfully sent");
       res.status(200).send({ code: 0, otp: otp });
     })
     .catch((error) => {
@@ -151,14 +154,13 @@ app.post("/resetPassword", async (req, res) => {
 // GET route for validating email
 app.get("/validateEmail", async (req, res) => {
   console.log("Directed to GET Route -> /validateEmail");
-  const email = req.body.email;
+  const email: string = req.query.email as string;
   let connection = await db;
   const user = await findUser(email);
   if (!user) {
     res.status(200).json({ code: 1 });
   } else {
       res.status(200).json({ code: 0 });
-      console.log("Error validating email on /validateEmail route");
     }
   }
 )
