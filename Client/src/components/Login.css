@@ -10,6 +10,28 @@
   margin-bottom: -5px;
 }
 
+.otpBtn{
+  height: 20px;
+  margin-right: -16px;
+}
+
+.resetBox{
+  margin-bottom: 20px;
+}
+
+.resetBtn{
+  margin-left: 32%;
+  margin-bottom: 10px;
+}
+
+.resetDiv{
+  margin-top: -30px;
+}
+
+.resetEmail{
+  margin-top: -30px;
+}
+
 .otpInput {
   background-color: #1d232a;
   border: 2px solid #646ee4;

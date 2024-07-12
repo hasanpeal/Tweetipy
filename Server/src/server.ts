@@ -145,6 +145,7 @@ app.post("/resetPassword", async (req, res) => {
   } else {
     try {
       await updatePassword(email, newPassword);
+      res.status(200).json({ code: 0 })
     } catch (err) {
       console.log("Error updating password on /resetPassword route");
     }
