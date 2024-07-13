@@ -99,6 +99,23 @@ export async function updatePassword(email: string, newPassword: string) {
   }
 }
 
+// Authenticate login
+export async function performAuth(email: string, password: string) {
+    try{
+      const user = await User.findOne({ email }).exec();
+      if(!user){
+        return 1;
+      }
+      const passMatched = await bcrypt.compare(password, user.password);
+      if(!passMatched){
+        return 2;
+      }
+      return 0;
+    } catch (err) {
+      console.log("Error authenticate login: performAuth function in userService.ts");
+    }
+}
+
 // Validate User by Email
 export async function findUser(email: string) {
   try {

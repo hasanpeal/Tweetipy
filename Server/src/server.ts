@@ -4,12 +4,13 @@ import { dirname } from "path";
 import { fileURLToPath } from "url";
 import env from "dotenv";
 import passport from "passport";
-import { Strategy } from "passport-local";
+import { Strategy as LocalStrategy } from "passport-local";
 import session from "express-session";
 import flash from "connect-flash";
 import cors from "cors";
 import sgMail from "@sendgrid/mail";
 import db from "../database/db";
+import User from "../database/models/user"
 import {
   registerUser,
   updateProfiles,
@@ -17,12 +18,14 @@ import {
   updatePodcastFile,
   findUser,
   updatePassword,
+  performAuth,
 } from "../database/services/userServices";
 
 env.config();
 const app = express();
 const port = process.env.PORT;
 sgMail.setApiKey(process.env.SENDGRID_API_KEY || "");
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
@@ -33,6 +36,82 @@ app.use(
     credentials: true,
   })
 );
+
+// Session setup
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "secret",
+    resave: false,
+    saveUninitialized: false,
+    cookie: { maxAge: 7 * 24 * 60 * 60 * 1000 }, // 1 week
+  })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(flash());
+
+// Passport strategy
+passport.use(new LocalStrategy({usernameField: "email"}, async(email, password, done) => {
+  try {
+    const user = await findUser(email);
+    const result: number = await performAuth(email, password) || 5;
+    if(result === 1){
+      return done(null, false, {message: "Incorrect email"});
+    } else if(result === 2){
+      return done(null, false, {message: "Incorrect password"});
+    } else if(result === 5) {
+      console.log("Error getting performAuth res in LocalStrategy");
+      return done(null, false, { message: "Authentication error" });
+    } else if (!user) {
+      return done(null, false, {message: "User not found"});
+    } else {
+      return done(null, user);
+    }
+  } catch (err) {
+    return done(err);
+  }
+}))
+
+passport.serializeUser((user, done) => {
+  done(null, (user as any)._id);
+});
+
+passport.deserializeUser(async (id, done) => {
+  try {
+    const user = await User.findById(id);
+    done(null, user);
+  } catch (err) {
+    done(err);
+  }
+});
+
+// POST Route for login
+app.post("/login", (req, res, next) => {
+  passport.authenticate("local", (err: Error | null, user: any, info: any) => {
+    if(err) return next(err);
+    if(!user) return res.status(401).json({code: 1, message: info.message});
+    req.logIn(user, (err) => {
+      if(err) return next(err);
+      return res.status(200).json(200).json({code: 0, message: "Login successful"});
+    });
+  }) (req, res, next);
+})
+
+// POST Route for logout
+app.post("/logout", (req, res) => {
+  req.logout((err) => {
+    if (err) {
+      return res.status(500).json({ code: 1, message: "Error logging out" });
+    }
+    req.session.destroy((err) => {
+      if (err) {
+        return res.status(500).json({ code: 1, message: "Error destroying session" });
+      }
+      res.status(200).json({ code: 0, message: "Logout successful" });
+    });
+  });
+});
 
 // POST Route for registering user
 app.post("/register", async (req, res) => {
