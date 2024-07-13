@@ -55,14 +55,11 @@ app.use(flash());
 passport.use(new LocalStrategy({usernameField: "email"}, async(email, password, done) => {
   try {
     const user = await findUser(email);
-    const result: number = await performAuth(email, password) || 5;
+    const result = await performAuth(email, password);
     if(result === 1){
       return done(null, false, {message: "Incorrect email"});
     } else if(result === 2){
       return done(null, false, {message: "Incorrect password"});
-    } else if(result === 5) {
-      console.log("Error getting performAuth res in LocalStrategy");
-      return done(null, false, { message: "Authentication error" });
     } else if (!user) {
       return done(null, false, {message: "User not found"});
     } else {
@@ -88,25 +85,27 @@ passport.deserializeUser(async (id, done) => {
 
 // POST Route for login
 app.post("/login", (req, res, next) => {
+  console.log("Directed to POST Route -> /login");
   passport.authenticate("local", (err: Error | null, user: any, info: any) => {
     if(err) return next(err);
-    if(!user) return res.status(401).json({code: 1, message: info.message});
+    if (!user) return res.status(200).json({ code: 1, message: info.message });
     req.logIn(user, (err) => {
       if(err) return next(err);
-      return res.status(200).json(200).json({code: 0, message: "Login successful"});
+      return res.status(200).json({code: 0, message: "Login successful"});
     });
   }) (req, res, next);
 })
 
 // POST Route for logout
 app.post("/logout", (req, res) => {
+  console.log("Directed to POST Route -> /logout");
   req.logout((err) => {
     if (err) {
-      return res.status(500).json({ code: 1, message: "Error logging out" });
+      return res.status(200).json({ code: 1, message: "Error logging out" });
     }
     req.session.destroy((err) => {
       if (err) {
-        return res.status(500).json({ code: 1, message: "Error destroying session" });
+        return res.status(200).json({ code: 1, message: "Error destroying session" });
       }
       res.status(200).json({ code: 0, message: "Logout successful" });
     });
@@ -209,7 +208,7 @@ app.post("/sentOTP", async (req, res) => {
     })
     .catch((error) => {
       console.log("Error sending OTP email on /sentOTP route");
-      res.status(500).send({ code: 1 });
+      res.status(200).send({ code: 1 });
     });
 });
 

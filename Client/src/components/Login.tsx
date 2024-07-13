@@ -55,9 +55,22 @@ function Login() {
 
   const handleLogin = async () => {
     if (await validateForm()) {
-      const result = await axios.post("/login", { email, password });
-      if(result.data.code === 0) {
-        console.log();
+      try {
+        const result = await axios.post("http://localhost:3001/login", {
+          email,
+          password,
+        });
+        const { code, message } = result.data;
+        console.log(code);
+        console.log(message);
+        if(code === 0){
+          toast.success(message);
+          navigate("/dashboard", {state: {email}});
+        } else {
+          toast.error(message);
+        }
+      } catch (err) {
+        console.error("Error in handleLogin function in Login.tsx");
       }
     } else {
       setTimeout(() => {
@@ -337,6 +350,17 @@ function Login() {
     
   }
 
+
+
+
+
+
+
+
+
+
+
+
   return (
     <div className="mainContainer">
       <div className="card bg-base-100 w-96 shadow-xl cardDiv">
@@ -418,6 +442,7 @@ function Login() {
             <p className="alertText text-red-500">{formErrors.password}</p>
           )}
         </div>
+
 
         {forget && !passFlag && (
           <a
@@ -551,7 +576,9 @@ function Login() {
             </label>
 
             {newPasswordError.nPass && (
-              <p className="newPassText text-red-500">{newPasswordError.nPass}</p>
+              <p className="newPassText text-red-500">
+                {newPasswordError.nPass}
+              </p>
             )}
 
             <label className="input input-bordered flex items-center gap-2 resetBox">
@@ -590,7 +617,9 @@ function Login() {
             </label>
 
             {newPasswordError.cnPass && (
-              <p className="newPassText text-red-500">{newPasswordError.cnPass}</p>
+              <p className="newPassText text-red-500">
+                {newPasswordError.cnPass}
+              </p>
             )}
 
             {newPasswordError.confirmPassword && (
