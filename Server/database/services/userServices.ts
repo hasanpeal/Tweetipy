@@ -99,6 +99,34 @@ export async function updatePassword(email: string, newPassword: string) {
   }
 }
 
+// Know if user is new
+export async function isNewUser(email: string) {
+  try {
+    const user = await User.findOne({ email }).exec();
+    if(!user) console.log("User not found in isNewUser function of UserServices.ts");
+    else {
+      const res = user.newUser;
+      return res;
+    } 
+  } catch (err) {
+    console.log("Error knowing whether user is new: isNewUser function in userService.ts");
+  }
+}
+
+// Flag new user or not
+export async function flagNewUser(email: string, bool: boolean) {
+  try {
+    const user = await User.findOne({ email }).exec();
+    if(!user) console.log("User not found in flagNewUser function of UserServices.ts");
+    else {
+      user.newUser = bool;
+      await user.save();
+    }
+  } catch (err) {
+    console.log("Error flagging new user: flagNewUser function in userServices.ts");
+  }
+}
+
 // Authenticate login
 export async function performAuth(email: string, password: string) {
     try{

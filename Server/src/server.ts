@@ -70,10 +70,12 @@ passport.use(new LocalStrategy({usernameField: "email"}, async(email, password, 
   }
 }))
 
+// Serialize User
 passport.serializeUser((user, done) => {
   done(null, (user as any)._id);
 });
 
+// Deserialize User
 passport.deserializeUser(async (id, done) => {
   try {
     const user = await User.findById(id);
