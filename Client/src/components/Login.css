@@ -43,8 +43,16 @@
   border-radius: 4px;
 }
 
+.selectBox{
+  margin-top: 3px;
+}
+
 .customAlert {
   padding-left: 38%;
+}
+
+.timeBox{
+  margin-left: 1px;
 }
 
 .alertText {

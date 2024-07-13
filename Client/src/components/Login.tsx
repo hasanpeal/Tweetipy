@@ -43,7 +43,7 @@ function Login() {
       });
       const code = result.data.code;
       console.log("Email exist code: ", code);
-      if (code === 0) return false
+      if (code === 0) return false;
       else true;
     } catch (err) {
       console.log("Error in emailAlreadyExist function");
@@ -60,9 +60,13 @@ function Login() {
         const { code, message } = result.data;
         console.log(code);
         console.log(message);
-        if(code === 0){
+        if (code === 0) {
           toast.success(message);
-          navigate("/dashboard", {state: {email}});
+          const res = await axios.get("http://localhost:3001/isNewUser", {
+            params: { email: email },
+          });
+          if (res.data.bool) navigate("/newuser", { state: { email } });
+          else navigate("/dashboard", { state: { email } });
         } else {
           toast.error(message);
         }
@@ -131,7 +135,7 @@ function Login() {
     return isValid;
   };
 
-  async function validateEmail(){
+  async function validateEmail() {
     const errors = {
       email: "",
     };
@@ -159,7 +163,7 @@ function Login() {
     return isValid;
   }
 
-  function validateNewPassword(){
+  function validateNewPassword() {
     const errors = {
       confirmPassword: "",
       nPass: "",
@@ -270,7 +274,7 @@ function Login() {
   }
 
   async function resetPassword() {
-    if(validateNewPassword()){
+    if (validateNewPassword()) {
       try {
         const result = await axios.post("http://localhost:3001/resetPassword", {
           email: email,
@@ -377,7 +381,6 @@ function Login() {
             <p className="alertText text-red-500">{formErrors.password}</p>
           )}
         </div>
-
 
         {forget && !passFlag && (
           <a
@@ -585,4 +588,3 @@ function Login() {
 }
 
 export default Login;
-

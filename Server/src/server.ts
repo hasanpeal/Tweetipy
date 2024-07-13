@@ -19,6 +19,8 @@ import {
   findUser,
   updatePassword,
   performAuth,
+  flagNewUser,
+  isNewUser,
 } from "../database/services/userServices";
 
 env.config();
@@ -245,6 +247,43 @@ app.get("/validateEmail", async (req, res) => {
     }
   }
 )
+
+// POST route for updating new user flag
+app.get("/updateNewUser", async(req, res) => {
+  console.log("Directed to POST Route -> /updateNewUser");
+  let connection = await db;
+  const email: string = req.body.email;
+  const bool: boolean = req.body.bool;
+  const user = await findUser(email);
+  if (!user) {
+    res.status(400).json({ code: 1, message: "User doesn't exist" });
+  } else {
+    try {
+      await flagNewUser(email, bool);
+      res.status(200).json({code: 0, message: "Success"});
+    } catch (err) {
+      console.log("Error updating new user flag on /updateNewUser route");
+    }
+  }
+})
+
+// POST route for knowing new user
+app.get("/isNewUser", async(req, res) => {
+  console.log("Directed to GET Route -> /isNewUser");
+  let connection = await db;
+  const email: string = req.query.email as string;
+  const user = await findUser(email);
+  if (!user) {
+    res.status(400).json({ code: 1, message: "User doesn't exist" });
+  } else {
+    try {
+      const result = await isNewUser(email);
+      res.status(200).json({code: 0, bool: result});
+    } catch (err) {
+      console.log("Error knowing new user on /isNewUser route");
+    }
+  }
+})
 
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);

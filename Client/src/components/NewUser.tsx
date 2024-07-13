@@ -1,6 +1,8 @@
 import "./Login.css";
 import { useState, ChangeEvent, useRef, useEffect } from "react";
-
+import toast, { Toaster } from "react-hot-toast";
+import axios from "axios";
+import { useLocation, useNavigate } from "react-router-dom";
 function NewUser() {
   const [user, setUser] = useState<string>("");
   const [data, setData] = useState<string[]>([
@@ -11,10 +13,15 @@ function NewUser() {
     "pded",
     "pde",
   ]);
+  const [time, setTime] = useState<string>("9");
   const [enteredUsers, setEnteredUsers] = useState<string[]>([]);
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const inputContainerRef = useRef<HTMLDivElement>(null);
+
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { email } = location.state;
 
   function handleSearch(event: ChangeEvent<HTMLInputElement>) {
     setUser(event.target.value);
@@ -37,7 +44,7 @@ function NewUser() {
     setEnteredUsers((prevUsers) => prevUsers.filter((_, i) => i !== index));
   }
 
-  function handleContinue() {
+  async function handleContinue() {
     const newUsers = user
       .split(",")
       .map((u) => u.trim())
@@ -45,6 +52,21 @@ function NewUser() {
     setData((prevData) => [...prevData, ...newUsers]);
     setEnteredUsers((prevUsers) => [...prevUsers, ...newUsers]);
     setUser("");
+    if(enteredUsers.length === 0) toast.error("Select at least 1 user");
+    else {
+      try{
+        await axios.post("http://localhost:3001/updateTime", {email, time});
+        await axios.post("http://localhost:3001/updateProfile", {email, profiles: enteredUsers});
+        await axios.post("http://localhost:3001/updateNewUser", {
+          email,
+          bool: false,
+        });
+        navigate("dashboard", {state: {email}});
+      } catch (err) {
+        console.log("Error in handleContinue in NewUser.tsx");
+      }
+    }
+    console.log(time);
     console.log(enteredUsers);
   }
 
@@ -69,19 +91,36 @@ function NewUser() {
           ></img>
           <span> </span>
         </article>
-
-        <label className="customLabel">
-          {" "}
+        <Toaster />
+        {/* <label className="customLabel">
           &nbsp;Pick a time for daily newsletter
-        </label>
+        </label> */}
         <div>
-          <label className="input input-bordered flex items-center gap-2">
-            <input type="time" required={true} />
+          {/* <label className="input input-bordered flex items-center gap-2"> */}
+          {/* <input type="time" required={true} value={time} onChange={(event) => setTime(event.target.value)}/> */}
+
+          {/* </label> */}
+          <label className="form-control w-full timeBox">
+            &nbsp;Select time for daily newsletter
+            <select
+              className="select select-bordered selectBox"
+              value={time}
+              onChange={(event) => setTime(event.target.value)}
+            >
+              <option disabled>Pick a time</option>
+              <option value={"9"}>9:00 am</option>
+              <option value={"12"}>12:00 pm</option>
+              <option value={"15"}>3:00 pm</option>
+              <option value={"18"}>6:00 pm</option>
+              <option value={"21"}>9:00 pm</option>
+              <option value={"24"}>12:00 am</option>
+            </select>
           </label>
         </div>
 
-        <label className="customLabel">&nbsp;Select preferred usernames</label>
+        {/* <label className="customLabel">&nbsp;Select preferred usernames</label> */}
         <div className="relative searchBox">
+          &nbsp;Select preferred usernames
           <div
             ref={inputContainerRef}
             className="input input-bordered flex items-center gap-2 userName"
