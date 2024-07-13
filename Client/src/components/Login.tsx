@@ -17,6 +17,8 @@ function Login() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [showOtp, setShowOtp] = useState(false);
+  const [load, setLoad] = useState(false);
+  const [load2, setLoad2] = useState(false);
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
   const [formErrors, setFormErrors] = useState({
     email: "",
@@ -62,6 +64,7 @@ function Login() {
         console.log(message);
         if (code === 0) {
           toast.success(message);
+          setLoad(true);
           const res = await axios.get("http://localhost:3001/isNewUser", {
             params: { email: email },
           });
@@ -283,6 +286,7 @@ function Login() {
         if (result.data.code === 0) {
           console.log("Success resetting password");
           toast.success("Password reset successful");
+          setLoad2(true);
           setTimeout(() => {
             window.location.reload();
           }, 1000);
@@ -582,6 +586,14 @@ function Login() {
             Sign up
           </a>
         </p>
+        {load && (
+          <span className="loading loading-spinner text-primary Load1"></span>
+        )}
+
+        {load2 && (
+          <span className="loading loading-spinner text-primary Load1"></span>
+        )}
+
       </div>
     </div>
   );

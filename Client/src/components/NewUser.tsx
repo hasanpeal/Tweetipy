@@ -14,6 +14,7 @@ function NewUser() {
     "pde",
   ]);
   const [time, setTime] = useState<string>("9");
+  const [load, setLoad] = useState(false);
   const [enteredUsers, setEnteredUsers] = useState<string[]>([]);
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -55,13 +56,14 @@ function NewUser() {
     if(enteredUsers.length === 0) toast.error("Select at least 1 user");
     else {
       try{
+        setLoad(true);
         await axios.post("http://localhost:3001/updateTime", {email, time});
         await axios.post("http://localhost:3001/updateProfile", {email, profiles: enteredUsers});
         await axios.post("http://localhost:3001/updateNewUser", {
           email,
           bool: false,
         });
-        navigate("dashboard", {state: {email}});
+        navigate("/dashboard", {state: {email}});
       } catch (err) {
         console.log("Error in handleContinue in NewUser.tsx");
       }
@@ -131,9 +133,7 @@ function NewUser() {
                 <button
                   className="removeBtn"
                   onClick={() => handleRemove(index)}
-                >
-                  x
-                </button>
+                ></button>
               </span>
             ))}
             <input
@@ -172,6 +172,9 @@ function NewUser() {
         >
           Continue
         </button>
+        {load && (
+          <span className="loading loading-spinner text-primary Load1"></span>
+        )}
       </div>
     </div>
   );

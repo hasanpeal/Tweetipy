@@ -153,7 +153,7 @@ const Signup: React.FC = () => {
           });
           
           if(result){
-            navigate("/newuser");
+            navigate("/newuser", {state: {email}});
           }
         } catch (error) {
           console.log("Error registering user froms signup.tsx");

@@ -10,7 +10,7 @@ import flash from "connect-flash";
 import cors from "cors";
 import sgMail from "@sendgrid/mail";
 import db from "../database/db";
-import User from "../database/models/user"
+import User from "../database/models/user";
 import {
   registerUser,
   updateProfiles,
@@ -54,23 +54,28 @@ app.use(passport.session());
 app.use(flash());
 
 // Passport strategy
-passport.use(new LocalStrategy({usernameField: "email"}, async(email, password, done) => {
-  try {
-    const user = await findUser(email);
-    const result = await performAuth(email, password);
-    if(result === 1){
-      return done(null, false, {message: "Incorrect email"});
-    } else if(result === 2){
-      return done(null, false, {message: "Incorrect password"});
-    } else if (!user) {
-      return done(null, false, {message: "User not found"});
-    } else {
-      return done(null, user);
+passport.use(
+  new LocalStrategy(
+    { usernameField: "email" },
+    async (email, password, done) => {
+      try {
+        const user = await findUser(email);
+        const result = await performAuth(email, password);
+        if (result === 1) {
+          return done(null, false, { message: "Incorrect email" });
+        } else if (result === 2) {
+          return done(null, false, { message: "Incorrect password" });
+        } else if (!user) {
+          return done(null, false, { message: "User not found" });
+        } else {
+          return done(null, user);
+        }
+      } catch (err) {
+        return done(err);
+      }
     }
-  } catch (err) {
-    return done(err);
-  }
-}))
+  )
+);
 
 // Serialize User
 passport.serializeUser((user, done) => {
@@ -91,14 +96,14 @@ passport.deserializeUser(async (id, done) => {
 app.post("/login", (req, res, next) => {
   console.log("Directed to POST Route -> /login");
   passport.authenticate("local", (err: Error | null, user: any, info: any) => {
-    if(err) return next(err);
+    if (err) return next(err);
     if (!user) return res.status(200).json({ code: 1, message: info.message });
     req.logIn(user, (err) => {
-      if(err) return next(err);
-      return res.status(200).json({code: 0, message: "Login successful"});
+      if (err) return next(err);
+      return res.status(200).json({ code: 0, message: "Login successful" });
     });
-  }) (req, res, next);
-})
+  })(req, res, next);
+});
 
 // POST Route for logout
 app.post("/logout", (req, res) => {
@@ -109,7 +114,9 @@ app.post("/logout", (req, res) => {
     }
     req.session.destroy((err) => {
       if (err) {
-        return res.status(200).json({ code: 1, message: "Error destroying session" });
+        return res
+          .status(200)
+          .json({ code: 1, message: "Error destroying session" });
       }
       res.status(200).json({ code: 0, message: "Logout successful" });
     });
@@ -145,10 +152,11 @@ app.post("/updateProfile", async (req, res) => {
   const profiles: [string] = req.body.profiles;
   const user = await findUser(email);
   if (!user) {
-    res.status(200).json({ code: 1, message: "User doesn't exist" });
+    res.status(400).json({ code: 1, message: "User doesn't exist" });
   } else {
     try {
       await updateProfiles(email, profiles);
+      res.status(200).json({ code: 0 });
     } catch (err) {
       console.log("Error updating profiles on /updateProfile route");
     }
@@ -163,10 +171,11 @@ app.post("/updateTime", async (req, res) => {
   const time: string = req.body.time;
   const user = await findUser(email);
   if (!user) {
-    res.status(200).json({ code: 1, message: "User doesn't exist" });
+    res.status(400).json({ code: 1, message: "User doesn't exist" });
   } else {
     try {
       await updateTime(email, time);
+      res.status(200).json({ code: 0 });
     } catch (err) {
       console.log("Error updating time on /updateTime route");
     }
@@ -227,7 +236,7 @@ app.post("/resetPassword", async (req, res) => {
   } else {
     try {
       await updatePassword(email, newPassword);
-      res.status(200).json({ code: 0 })
+      res.status(200).json({ code: 0 });
     } catch (err) {
       console.log("Error updating password on /resetPassword route");
     }
@@ -243,13 +252,12 @@ app.get("/validateEmail", async (req, res) => {
   if (!user) {
     res.status(200).json({ code: 1 });
   } else {
-      res.status(200).json({ code: 0 });
-    }
+    res.status(200).json({ code: 0 });
   }
-)
+});
 
 // POST route for updating new user flag
-app.get("/updateNewUser", async(req, res) => {
+app.post("/updateNewUser", async (req, res) => {
   console.log("Directed to POST Route -> /updateNewUser");
   let connection = await db;
   const email: string = req.body.email;
@@ -260,15 +268,15 @@ app.get("/updateNewUser", async(req, res) => {
   } else {
     try {
       await flagNewUser(email, bool);
-      res.status(200).json({code: 0, message: "Success"});
+      res.status(200).json({ code: 0, message: "Success" });
     } catch (err) {
       console.log("Error updating new user flag on /updateNewUser route");
     }
   }
-})
+});
 
 // POST route for knowing new user
-app.get("/isNewUser", async(req, res) => {
+app.get("/isNewUser", async (req, res) => {
   console.log("Directed to GET Route -> /isNewUser");
   let connection = await db;
   const email: string = req.query.email as string;
@@ -278,12 +286,12 @@ app.get("/isNewUser", async(req, res) => {
   } else {
     try {
       const result = await isNewUser(email);
-      res.status(200).json({code: 0, bool: result});
+      res.status(200).json({ code: 0, bool: result });
     } catch (err) {
       console.log("Error knowing new user on /isNewUser route");
     }
   }
-})
+});
 
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);

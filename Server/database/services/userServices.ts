@@ -12,13 +12,13 @@ export async function registerUser(
   try {
     const saltRounds = process.env.SALT_ROUNDS;
     const hashedPass = await bcrypt.hash(password, Number(saltRounds));
-    console.log(hashedPass);
     const user = new User({ firstName, lastName, email, password: hashedPass });
     await user.save();
     return user;
   } catch (err) {
     console.log(
-      "Error in registration: registerUser function in userServices.ts", err
+      "Error in registration: registerUser function in userServices.ts",
+      err
     );
   }
 }
@@ -30,7 +30,10 @@ export async function updateProfiles(email: string, newProfiles: [string]) {
     if (!user) {
       console.log("User not found: updateProfiles function in userServices.ts");
     } else {
-      user.twitterProfiles = [...user.twitterProfiles, ...newProfiles];
+      const uniqueProfiles = newProfiles.filter(
+        (profile) => !user.twitterProfiles.includes(profile)
+      );
+      user.twitterProfiles = [...user.twitterProfiles, ...uniqueProfiles];
       await user.save();
       return user;
     }
@@ -82,9 +85,7 @@ export async function updatePassword(email: string, newPassword: string) {
   try {
     const user = await User.findOne({ email }).exec();
     if (!user) {
-      console.log(
-        "User not found: updatePassword function in userServices.ts"
-      );
+      console.log("User not found: updatePassword function in userServices.ts");
     } else {
       const saltRounds = process.env.SALT_ROUNDS;
       const hashedPass = await bcrypt.hash(newPassword, Number(saltRounds));
@@ -103,13 +104,16 @@ export async function updatePassword(email: string, newPassword: string) {
 export async function isNewUser(email: string) {
   try {
     const user = await User.findOne({ email }).exec();
-    if(!user) console.log("User not found in isNewUser function of UserServices.ts");
+    if (!user)
+      console.log("User not found in isNewUser function of UserServices.ts");
     else {
       const res = user.newUser;
       return res;
-    } 
+    }
   } catch (err) {
-    console.log("Error knowing whether user is new: isNewUser function in userService.ts");
+    console.log(
+      "Error knowing whether user is new: isNewUser function in userService.ts"
+    );
   }
 }
 
@@ -117,31 +121,36 @@ export async function isNewUser(email: string) {
 export async function flagNewUser(email: string, bool: boolean) {
   try {
     const user = await User.findOne({ email }).exec();
-    if(!user) console.log("User not found in flagNewUser function of UserServices.ts");
+    if (!user)
+      console.log("User not found in flagNewUser function of UserServices.ts");
     else {
       user.newUser = bool;
       await user.save();
     }
   } catch (err) {
-    console.log("Error flagging new user: flagNewUser function in userServices.ts");
+    console.log(
+      "Error flagging new user: flagNewUser function in userServices.ts"
+    );
   }
 }
 
 // Authenticate login
 export async function performAuth(email: string, password: string) {
-    try{
-      const user = await User.findOne({ email }).exec();
-      if(!user){
-        return 1;
-      }
-      const passMatched = await bcrypt.compare(password, user.password);
-      if(!passMatched){
-        return 2;
-      }
-      return 0;
-    } catch (err) {
-      console.log("Error authenticate login: performAuth function in userService.ts");
+  try {
+    const user = await User.findOne({ email }).exec();
+    if (!user) {
+      return 1;
     }
+    const passMatched = await bcrypt.compare(password, user.password);
+    if (!passMatched) {
+      return 2;
+    }
+    return 0;
+  } catch (err) {
+    console.log(
+      "Error authenticate login: performAuth function in userService.ts"
+    );
+  }
 }
 
 // Validate User by Email
