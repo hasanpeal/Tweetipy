@@ -1,7 +1,7 @@
 "use client";
 import { useNavigate } from "react-router-dom";
 import { useRef, useState, KeyboardEvent } from "react";
-import toast, {Toaster} from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
 import "./Login.css";
 
@@ -21,6 +21,14 @@ function Login() {
   const [formErrors, setFormErrors] = useState({
     email: "",
     password: "",
+    // confirmPassword: "",
+    // nPass: "",
+    // cnPass: "",
+  });
+  const [emailErrors, setEmailErrors] = useState({
+    email: "",
+  });
+  const [newPasswordError, setNewPasswordError] = useState({
     confirmPassword: "",
     nPass: "",
     cnPass: "",
@@ -31,20 +39,33 @@ function Login() {
 
   const navigate = useNavigate();
 
+  async function emailDoesntExist() {
+    try {
+      const result = await axios.get("http://localhost:3001/validateEmail", {
+        params: { email: email },
+      });
+      const code = result.data.code;
+      console.log("Email exist code: ", code);
+      if (code === 0) return false
+      else true;
+    } catch (err) {
+      console.log("Error in emailAlreadyExist function");
+    }
+  }
+
   const handleLogin = async () => {
-    if (validateForm()) {
-      const result = axios.post("/login", { email, password });
-      console.log(result);
+    if (await validateForm()) {
+      const result = await axios.post("/login", { email, password });
+      if(result.data.code === 0) {
+        console.log();
+      }
     } else {
       setTimeout(() => {
         setFormErrors({
           email: "",
           password: "",
-          confirmPassword: "",
-          nPass: "",
-          cnPass: "",
         });
-      }, 5000);
+      }, 3000);
     }
   };
 
@@ -71,13 +92,13 @@ function Login() {
     }
   };
 
-  const validateForm = () => {
+  const validateForm = async () => {
     const errors = {
       email: "",
       password: "",
-      confirmPassword: "",
-      nPass: "",
-      cnPass: "",
+      // confirmPassword: "",
+      // nPass: "",
+      // cnPass: "",
     };
     let isValid = true;
 
@@ -87,18 +108,109 @@ function Login() {
     } else if (!/\S+@\S+\.\S+/.test(email)) {
       errors.email = "Not a valid email";
       isValid = false;
+    } else if (await emailDoesntExist()) {
+      errors.email = "Email isn't registered";
+      isValid = false;
+      setTimeout(() => {
+        setFormErrors((prevErrors) => ({ ...prevErrors, email: "" }));
+      }, 3000);
     }
     if (!password) {
       errors.password = "Password is required";
       isValid = false;
     }
 
+    // if (!newPassword) {
+    //   errors.nPass = "Password is required";
+    //   isValid = false;
+    //   setTimeout(() => {
+    //     setFormErrors((prevErrors) => ({ ...prevErrors, nPass: "" }));
+    //   }, 3000);
+    // } else if (
+    //   newPassword.length < 8 ||
+    //   !/[a-zA-Z]/.test(newPassword) ||
+    //   !/[0-9]/.test(newPassword)
+    // ) {
+    //   errors.nPass =
+    //     "Password must be at least 8 characters long and include a letter and a number";
+    //   isValid = false;
+    //   setTimeout(() => {
+    //     setFormErrors((prevErrors) => ({ ...prevErrors, nPass: "" }));
+    //   }, 3000);
+    // }
+
+    // if (!confirmNewPassword) {
+    //   errors.cnPass = "Password is required";
+    //   isValid = false;
+    //   setTimeout(() => {
+    //     setFormErrors((prevErrors) => ({ ...prevErrors, cnPass: "" }));
+    //   }, 3000);
+    // } else if (
+    //   confirmNewPassword.length < 8 ||
+    //   !/[a-zA-Z]/.test(confirmNewPassword) ||
+    //   !/[0-9]/.test(confirmNewPassword)
+    // ) {
+    //   errors.cnPass =
+    //     "Password must be at least 8 characters long and include a letter and a number";
+    //   isValid = false;
+    //   setTimeout(() => {
+    //     setFormErrors((prevErrors) => ({ ...prevErrors, cnPass: "" }));
+    //   }, 3000);
+    // }
+
+    // if (newPassword === confirmNewPassword) {
+    //   errors.confirmPassword = "Password doesn't match";
+    //   isValid = false;
+    //   setTimeout(() => {
+    //     setFormErrors((prevErrors) => ({ ...prevErrors, confirmPassword: "" }));
+    //   }, 3000);
+    // }
+    setFormErrors(errors);
+    return isValid;
+  };
+
+  async function validateEmail(){
+    const errors = {
+      email: "",
+    };
+    let isValid = true;
+    if (!email) {
+      errors.email = "Email is required";
+      isValid = false;
+      setTimeout(() => {
+        setFormErrors((prevErrors) => ({ ...prevErrors, email: "" }));
+      }, 3000);
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      errors.email = "Not a valid email";
+      isValid = false;
+      setTimeout(() => {
+        setFormErrors((prevErrors) => ({ ...prevErrors, email: "" }));
+      }, 3000);
+    } else if (await emailDoesntExist()) {
+      errors.email = "Email isn't registered";
+      isValid = false;
+      setTimeout(() => {
+        setFormErrors((prevErrors) => ({ ...prevErrors, email: "" }));
+      }, 3000);
+    }
+    setEmailErrors(errors);
+    return isValid;
+  }
+
+  function validateNewPassword(){
+    const errors = {
+      confirmPassword: "",
+      nPass: "",
+      cnPass: "",
+    };
+    let isValid = true;
+
     if (!newPassword) {
       errors.nPass = "Password is required";
       isValid = false;
       setTimeout(() => {
         setFormErrors((prevErrors) => ({ ...prevErrors, nPass: "" }));
-      }, 3000);
+      }, 5000);
     } else if (
       newPassword.length < 8 ||
       !/[a-zA-Z]/.test(newPassword) ||
@@ -109,7 +221,7 @@ function Login() {
       isValid = false;
       setTimeout(() => {
         setFormErrors((prevErrors) => ({ ...prevErrors, nPass: "" }));
-      }, 3000);
+      }, 5000);
     }
 
     if (!confirmNewPassword) {
@@ -117,7 +229,7 @@ function Login() {
       isValid = false;
       setTimeout(() => {
         setFormErrors((prevErrors) => ({ ...prevErrors, cnPass: "" }));
-      }, 3000);
+      }, 5000);
     } else if (
       confirmNewPassword.length < 8 ||
       !/[a-zA-Z]/.test(confirmNewPassword) ||
@@ -128,19 +240,19 @@ function Login() {
       isValid = false;
       setTimeout(() => {
         setFormErrors((prevErrors) => ({ ...prevErrors, cnPass: "" }));
-      }, 3000);
+      }, 5000);
     }
 
-    if (newPassword === confirmNewPassword) {
+    if (newPassword !== confirmNewPassword) {
       errors.confirmPassword = "Password doesn't match";
       isValid = false;
       setTimeout(() => {
         setFormErrors((prevErrors) => ({ ...prevErrors, confirmPassword: "" }));
-      }, 3000);
+      }, 5000);
     }
-    setFormErrors(errors);
+    setNewPasswordError(errors);
     return isValid;
-  };
+  }
 
   const handleOtpKeyDown = (
     index: number,
@@ -180,25 +292,49 @@ function Login() {
     setForget(false);
   };
 
-  function handleSend() {
+  async function handleSend() {
     // Generates OTP
-    generateOtp();
-    setShowOtp(true);
+    console.log("Handle send function triggered");
+    console.log(formErrors);
+    if (await validateEmail()) {
+      generateOtp();
+      setShowOtp(true);
+    } else {
+      setTimeout(() => {
+        setEmailErrors({
+          email: "",
+        });
+      }, 3000);
+    }
   }
 
-  async function resetPassword(){
-    try {
-      const result = await axios.post("http://localhost:3001/resetPassword", {email: email, newPassword: confirmNewPassword});
-      if(result.data.code === 0) {
-        console.log("Success resetting password")
-        toast.success("Password reset successful");
-        setTimeout(() => {
-          window.location.reload();
-        }, 1000)
+  async function resetPassword() {
+    if(validateNewPassword()){
+      try {
+        const result = await axios.post("http://localhost:3001/resetPassword", {
+          email: email,
+          newPassword: confirmNewPassword,
+        });
+        if (result.data.code === 0) {
+          console.log("Success resetting password");
+          toast.success("Password reset successful");
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
+        }
+      } catch (err) {
+        console.log("Error resetting password in Login.tsx");
       }
-    } catch (err) {
-      console.log("Error resetting password in Login.tsx");
+    } else {
+      setTimeout(() => {
+        setNewPasswordError({
+          confirmPassword: "",
+          nPass: "",
+          cnPass: "",
+        });
+      }, 3000);
     }
+    
   }
 
   return (
@@ -214,7 +350,7 @@ function Login() {
           ></img>
           <span> </span>
         </article>
-        <Toaster/>
+        <Toaster />
         <div>
           {forget && !passFlag && (
             <label className="input input-bordered flex items-center gap-2">
@@ -236,7 +372,7 @@ function Login() {
               />
             </label>
           )}
-          {formErrors.email && !passFlag && (
+          {formErrors.email && !passFlag && forget && !showOtp && (
             <p className="alertText text-red-500">{formErrors.email}</p>
           )}
         </div>
@@ -334,8 +470,8 @@ function Login() {
             </button>
           </label>
         )}
-        {formErrors.email && (
-          <p className="alertText text-red-500">{formErrors.email}</p>
+        {emailErrors.email && !forget && (
+          <p className="custoText text-red-500">{emailErrors.email}</p>
         )}
 
         {!forget && showOtp && (
@@ -414,8 +550,8 @@ function Login() {
               </button>
             </label>
 
-            {formErrors.nPass && (
-              <p className="alertText text-red-500">{formErrors.nPass}</p>
+            {newPasswordError.nPass && (
+              <p className="newPassText text-red-500">{newPasswordError.nPass}</p>
             )}
 
             <label className="input input-bordered flex items-center gap-2 resetBox">
@@ -453,13 +589,13 @@ function Login() {
               </button>
             </label>
 
-            {formErrors.cnPass && (
-              <p className="alertText text-red-500">{formErrors.cnPass}</p>
+            {newPasswordError.cnPass && (
+              <p className="newPassText text-red-500">{newPasswordError.cnPass}</p>
             )}
 
-            {formErrors.confirmPassword && (
-              <p className="alertText text-red-500">
-                {formErrors.confirmPassword}
+            {newPasswordError.confirmPassword && (
+              <p className="newPassText text-red-500">
+                {newPasswordError.confirmPassword}
               </p>
             )}
 
@@ -488,3 +624,4 @@ function Login() {
 }
 
 export default Login;
+
