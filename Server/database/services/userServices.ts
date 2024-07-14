@@ -134,6 +134,42 @@ export async function flagNewUser(email: string, bool: boolean) {
   }
 }
 
+// Know if user is Twitter authenticated
+export async function isTwitterUser(email: string) {
+  try {
+    const user = await User.findOne({ email }).exec();
+    if (!user)
+      console.log("User not found in isTwitterUser function of UserServices.ts");
+    else {
+      const res = user.twitterUser;
+      return res;
+    }
+  } catch (err) {
+    console.log(
+      "Error knowing whether user is twitter use: isTwitterUser function in userService.ts"
+    );
+  }
+}
+
+// Flag twitter users
+export async function flagTwitterUser(email: string, bool: boolean) {
+  try {
+    const user = await User.findOne({ email }).exec();
+    if (!user)
+      console.log(
+        "User not found in flagTwitterUser function of UserServices.ts"
+      );
+    else {
+      user.twitterUser = bool;
+      await user.save();
+    }
+  } catch (err) {
+    console.log(
+      "Error flagging twitterUser: flagTwitterUser function in uberServices.ts"
+    );
+  }
+}
+
 // Authenticate login
 export async function performAuth(email: string, password: string) {
   try {

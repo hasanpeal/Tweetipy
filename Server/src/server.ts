@@ -12,7 +12,6 @@ import cors from "cors";
 import sgMail from "@sendgrid/mail";
 import db from "../database/db";
 import User from "../database/models/user";
-import { createProxyMiddleware } from "http-proxy-middleware";
 import {
   registerUser,
   updateProfiles,
@@ -23,6 +22,8 @@ import {
   performAuth,
   flagNewUser,
   isNewUser,
+  isTwitterUser,
+  flagTwitterUser,
 } from "../database/services/userServices";
 
 env.config();
@@ -33,6 +34,7 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY || "");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+// Configuring cors
 app.use(
   cors({
     origin: process.env.ORIGIN,
@@ -154,7 +156,6 @@ passport.deserializeUser(async (id, done) => {
   }
 });
 
-
 // Twitter OAuth routes for sign-in
 app.get("/x/oauth/signin", passport.authenticate("twitter"));
 
@@ -164,11 +165,15 @@ app.get("/x/oauth/callback", (req, res, next) => {
     if (err) return next(err);
     if (!user) {
       const message = req.flash("error")[0] || "Authentication failed";
-      return res.redirect(`http://localhost:3000/login?code=1&message=${message}`);
+      return res.redirect(
+        `http://localhost:3000/login?code=1&message=${message}`
+      );
     }
     req.logIn(user, (err) => {
       if (err) return next(err);
-      return res.redirect(`http://localhost:3000/login?code=0&message=Successful%20login&email=${user.email}`);
+      return res.redirect(
+        `http://localhost:3000/login?code=0&message=Successful%20login&email=${user.email}`
+      );
     });
   })(req, res, next);
 });
@@ -185,13 +190,16 @@ app.get("/x/oauth/signup/callback", (req, res, next) => {
     if (err) return next(err);
     if (!user) {
       const message = req.flash("error")[0] || "Authentication failed";
-      return res.redirect(`http://localhost:3000/signup?code=1&message=${message}`);
+      return res.redirect(
+        `http://localhost:3000/signup?code=1&message=${message}`
+      );
     }
     const email = user?.email;
-    return res.redirect(`http://localhost:3000/signup?code=0&email=${email}&message=Successful%20signup`);
+    return res.redirect(
+      `http://localhost:3000/signup?code=0&email=${email}&message=Successful%20signup`
+    );
   })(req, res, next);
 });
-
 
 // POST Route for login
 app.post("/login", (req, res, next) => {
@@ -390,6 +398,45 @@ app.get("/isNewUser", async (req, res) => {
       res.status(200).json({ code: 0, bool: result });
     } catch (err) {
       console.log("Error knowing new user on /isNewUser route");
+    }
+  }
+});
+
+// POST route for updating twitter user flag
+app.post("/updateTwitterUser", async (req, res) => {
+  console.log("Directed to POST Route -> /updateTwitterUser");
+  let connection = await db;
+  const email: string = req.body.email;
+  const bool: boolean = req.body.bool;
+  const user = await findUser(email);
+  if (!user) {
+    res.status(400).json({ code: 1, message: "User doesn't exist" });
+  } else {
+    try {
+      await flagTwitterUser(email, bool);
+      res.status(200).json({ code: 0, message: "Success" });
+    } catch (err) {
+      console.log(
+        "Error updating twitter user flag on /updateTwitterUser route"
+      );
+    }
+  }
+});
+
+// POST route for knowing new user
+app.get("/isTwitterUser", async (req, res) => {
+  console.log("Directed to GET Route -> /isTwitterUser");
+  let connection = await db;
+  const email: string = req.query.email as string;
+  const user = await findUser(email);
+  if (!user) {
+    res.status(400).json({ code: 1, message: "User doesn't exist" });
+  } else {
+    try {
+      const result = await isTwitterUser(email);
+      res.status(200).json({ code: 0, bool: result });
+    } catch (err) {
+      console.log("Error knowing new user on /isTwitterUser route");
     }
   }
 });

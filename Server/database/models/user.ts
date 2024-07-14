@@ -8,7 +8,8 @@ const userSchema = new mongoose.Schema({
   twitterProfiles: { type: [String], default: [] },
   emailTime: { type: String },
   podcastFile: { type: String },
-  newUser: {type: Boolean, default: true},
+  newUser: { type: Boolean, default: true },
+  twitterUser: { type: Boolean, default: false },
 });
 
 const User = mongoose.model("User", userSchema);
