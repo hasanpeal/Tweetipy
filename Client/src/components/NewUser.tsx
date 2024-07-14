@@ -1,22 +1,18 @@
 import "./Login.css";
-import { useState, ChangeEvent, useRef, useEffect } from "react";
+import { useState, ChangeEvent, useRef, useEffect, useCallback } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
+import _ from "lodash";
+
 function NewUser() {
   const [user, setUser] = useState<string>("");
-  const [data, setData] = useState<string[]>([
-    "elonmusk",
-    "pealhasan",
-    "peter",
-    "peref",
-    "pded",
-    "pde",
-  ]);
+  const [data, setData] = useState<string[]>([]);
   const [time, setTime] = useState<string>("9");
   const [load, setLoad] = useState(false);
   const [enteredUsers, setEnteredUsers] = useState<string[]>([]);
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
+  const [loadingSuggestions, setLoadingSuggestions] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const inputContainerRef = useRef<HTMLDivElement>(null);
 
@@ -24,9 +20,66 @@ function NewUser() {
   const navigate = useNavigate();
   const { email } = location.state;
 
+  const searchAccount = useCallback(async (keyword: string) => {
+    const options = {
+      method: "GET",
+      url: "https://twitter-api45.p.rapidapi.com/search.php",
+      params: {
+        query: `${keyword}`,
+        search_type: "People",
+      },
+      headers: {
+        "x-rapidapi-key": import.meta.env.VITE_RAPID_API_KEY,
+        "x-rapidapi-host": "twitter-api45.p.rapidapi.com",
+      },
+    };
+    try {
+      const result: string[] = [];
+      const response = await axios.request(options);
+      for (let i = 0; i < 8; i++) {
+        if (response.data.timeline[i]?.screen_name) {
+          result.push(response.data.timeline[i].screen_name);
+        } else break;
+      }
+      return result;
+    } catch (error) {
+      console.log(
+        "Error fetching data for searchAccount in tweetCall.ts\n",
+        error
+      );
+    }
+  }, []);
+
+  const debouncedSearchAccount = useCallback(
+    _.debounce(async (keyword: string) => {
+      if (keyword.length > 0) {
+        setLoadingSuggestions(true);
+        const suggestions = await searchAccount(keyword);
+        setLoadingSuggestions(false);
+        if (suggestions) {
+          setData(suggestions);
+        } else {
+          console.log("Suggestions returned nothing");
+        }
+      } else {
+        setData([]);
+      }
+    }, 300),
+    [searchAccount]
+  );
+
+  useEffect(() => {
+    if (user.length > 0) {
+      setShowDropdown(true);
+      debouncedSearchAccount(user);
+    } else {
+      setShowDropdown(false);
+      setData([]);
+    }
+  }, [user, debouncedSearchAccount]);
+
   function handleSearch(event: ChangeEvent<HTMLInputElement>) {
     setUser(event.target.value);
-    setShowDropdown(event.target.value.length > 0);
   }
 
   function handleSelect(item: string) {
@@ -53,26 +106,26 @@ function NewUser() {
     setData((prevData) => [...prevData, ...newUsers]);
     setEnteredUsers((prevUsers) => [...prevUsers, ...newUsers]);
     setUser("");
-    if(enteredUsers.length === 0) toast.error("Select at least 1 user");
+    if (enteredUsers.length === 0) toast.error("Select at least 1 user");
     else {
-      try{
+      try {
         setLoad(true);
-        await axios.post("http://localhost:3001/updateTime", {email, time});
-        await axios.post("http://localhost:3001/updateProfile", {email, profiles: enteredUsers});
+        await axios.post("http://localhost:3001/updateTime", { email, time });
+        await axios.post("http://localhost:3001/updateProfile", {
+          email,
+          profiles: enteredUsers,
+        });
         await axios.post("http://localhost:3001/updateNewUser", {
           email,
           bool: false,
         });
-        navigate("/dashboard", {state: {email}});
+        navigate("/dashboard", { state: { email } });
       } catch (err) {
         console.log("Error in handleContinue in NewUser.tsx");
       }
     }
-    console.log(time);
-    console.log(enteredUsers);
   }
 
-  // Adjust input container height based on content
   useEffect(() => {
     if (inputContainerRef.current) {
       inputContainerRef.current.style.height = "auto";
@@ -94,14 +147,7 @@ function NewUser() {
           <span> </span>
         </article>
         <Toaster />
-        {/* <label className="customLabel">
-          &nbsp;Pick a time for daily newsletter
-        </label> */}
         <div>
-          {/* <label className="input input-bordered flex items-center gap-2"> */}
-          {/* <input type="time" required={true} value={time} onChange={(event) => setTime(event.target.value)}/> */}
-
-          {/* </label> */}
           <label className="form-control w-full timeBox">
             &nbsp;Select time for daily newsletter
             <select
@@ -119,8 +165,6 @@ function NewUser() {
             </select>
           </label>
         </div>
-
-        {/* <label className="customLabel">&nbsp;Select preferred usernames</label> */}
         <div className="relative searchBox">
           &nbsp;Select preferred usernames
           <div
@@ -133,7 +177,19 @@ function NewUser() {
                 <button
                   className="removeBtn"
                   onClick={() => handleRemove(index)}
-                ></button>
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    x="0px"
+                    y="0px"
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    className="cross"
+                  >
+                    <path d="M12,2C6.47,2,2,6.47,2,12s4.47,10,10,10s10-4.47,10-10S17.53,2,12,2z M17,15.59L15.59,17L12,13.41L8.41,17L7,15.59 L10.59,12L7,8.41L8.41,7L12,10.59L15.59,7L17,8.41L13.41,12L17,15.59z"></path>
+                  </svg>
+                </button>
               </span>
             ))}
             <input
@@ -151,17 +207,23 @@ function NewUser() {
               tabIndex={0}
               className="dropdown-content menu bg-base-100 rounded-box z-[1] w-full p-2 shadow absolute mt-1"
             >
-              {data
-                .filter((item) => {
-                  const searchTerm = user.toLowerCase();
-                  const fullName = item.toLowerCase();
-                  return searchTerm && fullName.startsWith(searchTerm);
-                })
-                .map((item, index) => (
-                  <li key={index}>
-                    <a onClick={() => handleSelect(item)}>{item}</a>
-                  </li>
-                ))}
+              {loadingSuggestions ? (
+                <li>
+                  <span className="loading loading-dots loading-sm loadBut"></span>
+                </li>
+              ) : (
+                data
+                  .filter((item) => {
+                    const searchTerm = user.toLowerCase();
+                    const fullName = item.toLowerCase();
+                    return searchTerm && fullName.startsWith(searchTerm);
+                  })
+                  .map((item, index) => (
+                    <li key={index}>
+                      <a onClick={() => handleSelect(item)}> @{item}</a>
+                    </li>
+                  ))
+              )}
             </ul>
           )}
         </div>
@@ -181,3 +243,8 @@ function NewUser() {
 }
 
 export default NewUser;
+
+//about to make changes
+//second changes
+//third change
+//fourth change

@@ -121,11 +121,16 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   margin-top: 15px;
 }
 
+.loadBut{
+   margin-left: 20px;
+}
+
 .removeBtn {
   background: none;
   border: none;
   color: black;
   margin-left: 4px;
+  margin-top: -2px;
   cursor: pointer;
 }
 
@@ -165,8 +170,13 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  margin-top: 180px;
   /* font-family: "Open Sans", sans-serif; */
+}
+
+.cross{
+  margin-top: 3px;
+  margin-right: -4px;
 }
 
 .cardDiv {
