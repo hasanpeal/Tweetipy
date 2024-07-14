@@ -196,6 +196,16 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   width: 15px;
 }
 
+.addAllBtn{
+  width: 49%;
+  margin-right: 7px;
+}
+
+
+.removeAllBtn{
+  width: 49%;
+}
+
 p {
   text-align: center;
   padding-bottom: 20px;

@@ -10,11 +10,13 @@ function NewUser() {
   const [data, setData] = useState<string[]>([]);
   const [time, setTime] = useState<string>("9");
   const [load, setLoad] = useState(false);
+  const [twitter, setTwitter] = useState(true);
   const [enteredUsers, setEnteredUsers] = useState<string[]>([]);
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
   const [loadingSuggestions, setLoadingSuggestions] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const inputContainerRef = useRef<HTMLDivElement>(null);
+  const cache = useRef<{ [key: string]: string[] }>({});
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -36,7 +38,7 @@ function NewUser() {
     try {
       const result: string[] = [];
       const response = await axios.request(options);
-      for (let i = 0; i < 8; i++) {
+      for (let i = 0; i < 6; i++) {
         if (response.data.timeline[i]?.screen_name) {
           result.push(response.data.timeline[i].screen_name);
         } else break;
@@ -53,13 +55,19 @@ function NewUser() {
   const debouncedSearchAccount = useCallback(
     _.debounce(async (keyword: string) => {
       if (keyword.length > 0) {
-        setLoadingSuggestions(true);
-        const suggestions = await searchAccount(keyword);
-        setLoadingSuggestions(false);
-        if (suggestions) {
-          setData(suggestions);
+        if (cache.current[keyword]) {
+          setData(cache.current[keyword]);
+          setLoadingSuggestions(false);
         } else {
-          console.log("Suggestions returned nothing");
+          setLoadingSuggestions(true);
+          const suggestions = await searchAccount(keyword);
+          setLoadingSuggestions(false);
+          if (suggestions) {
+            setData(suggestions);
+            cache.current[keyword] = suggestions;
+          } else {
+            console.log("Suggestions returned nothing");
+          }
         }
       } else {
         setData([]);
@@ -205,7 +213,7 @@ function NewUser() {
           {showDropdown && (
             <ul
               tabIndex={0}
-              className="dropdown-content menu bg-base-100 rounded-box z-[1] w-full p-2 shadow absolute mt-1"
+              className="dropdown-content menu bg-base-100 rounded-box z-[1] w-full p-2 shadow absolute mt-1 suggList"
             >
               {loadingSuggestions ? (
                 <li>
@@ -228,8 +236,20 @@ function NewUser() {
           )}
         </div>
 
+        {twitter && (
+          <div>
+            <p> Want to add all followed users from X?</p>
+            <button className="btn btn-outline btn-success addAllBtn">
+              Add all
+            </button>
+            <button className="btn btn-outline btn-error removeAllBtn">
+              Remove all
+            </button>
+          </div>
+        )}
+
         <button
-          className="btn btn-outline btn-primary contBtn"
+          className="btn btn-active btn-primary contBtn"
           onClick={handleContinue}
         >
           Continue
@@ -244,7 +264,4 @@ function NewUser() {
 
 export default NewUser;
 
-//about to make changes
-//second changes
-//third change
-//fourth change
+//changes

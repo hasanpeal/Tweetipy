@@ -5,12 +5,14 @@ import { fileURLToPath } from "url";
 import env from "dotenv";
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
+import { Strategy as TwitterStrategy } from "passport-twitter";
 import session from "express-session";
 import flash from "connect-flash";
 import cors from "cors";
 import sgMail from "@sendgrid/mail";
 import db from "../database/db";
 import User from "../database/models/user";
+import { createProxyMiddleware } from "http-proxy-middleware";
 import {
   registerUser,
   updateProfiles,
@@ -53,6 +55,12 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
 
+declare module "express-session" {
+  interface Session {
+    signup?: boolean;
+  }
+}
+
 // Passport strategy
 passport.use(
   new LocalStrategy(
@@ -77,6 +85,60 @@ passport.use(
   )
 );
 
+// Passport Twitter strategy
+passport.use(
+  new TwitterStrategy(
+    {
+      consumerKey: process.env.TWITTER_CONSUMER_KEY!,
+      consumerSecret: process.env.TWITTER_CONSUMER_SECRET!,
+      callbackURL: "http://localhost:3001/x/oauth/callback",
+      includeEmail: true,
+      passReqToCallback: true,
+    },
+    async (req, token, tokenSecret, profile, done) => {
+      try {
+        const email = profile.emails && profile.emails[0].value;
+        if (!email) {
+          return done(new Error("No email found"));
+        }
+
+        const isSignUp = req.session.signup;
+        delete req.session.signup;
+
+        const firstName =
+          profile?.name?.givenName || profile?.displayName?.split(" ")[0] || "";
+        const lastName =
+          profile?.name?.familyName ||
+          profile?.displayName?.split(" ")[1] ||
+          "";
+
+        if (isSignUp) {
+          // Handle sign-up
+          const existingUser = await findUser(email);
+          if (existingUser) {
+            req.flash("error", "User already exists");
+            return done(null, false);
+          }
+          let connection = await db;
+          await registerUser(firstName, lastName, email, "");
+          const newUser = await findUser(email);
+          return done(null, newUser);
+        } else {
+          // Handle sign-in
+          const user = await findUser(email);
+          if (!user) {
+            req.flash("error", "User not found");
+            return done(null, false);
+          }
+          return done(null, user);
+        }
+      } catch (err) {
+        return done(err);
+      }
+    }
+  )
+);
+
 // Serialize User
 passport.serializeUser((user, done) => {
   done(null, (user as any)._id);
@@ -91,6 +153,45 @@ passport.deserializeUser(async (id, done) => {
     done(err);
   }
 });
+
+
+// Twitter OAuth routes for sign-in
+app.get("/x/oauth/signin", passport.authenticate("twitter"));
+
+// Twitter OAuth callback route for sign-in
+app.get("/x/oauth/callback", (req, res, next) => {
+  passport.authenticate("twitter", (err: Error | null, user: any) => {
+    if (err) return next(err);
+    if (!user) {
+      const message = req.flash("error")[0] || "Authentication failed";
+      return res.redirect(`http://localhost:3000/login?code=1&message=${message}`);
+    }
+    req.logIn(user, (err) => {
+      if (err) return next(err);
+      return res.redirect(`http://localhost:3000/login?code=0&message=Successful%20login&email=${user.email}`);
+    });
+  })(req, res, next);
+});
+
+// Twitter OAuth routes for sign-up
+app.get("/x/oauth/signup", (req, res, next) => {
+  req.session.signup = true;
+  passport.authenticate("twitter")(req, res, next);
+});
+
+// Twitter OAuth callback route for sign-up
+app.get("/x/oauth/signup/callback", (req, res, next) => {
+  passport.authenticate("twitter", async (err: Error | null, user: any) => {
+    if (err) return next(err);
+    if (!user) {
+      const message = req.flash("error")[0] || "Authentication failed";
+      return res.redirect(`http://localhost:3000/signup?code=1&message=${message}`);
+    }
+    const email = user?.email;
+    return res.redirect(`http://localhost:3000/signup?code=0&email=${email}&message=Successful%20signup`);
+  })(req, res, next);
+});
+
 
 // POST Route for login
 app.post("/login", (req, res, next) => {

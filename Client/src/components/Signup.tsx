@@ -2,7 +2,12 @@
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import React, { useState, useRef, KeyboardEvent } from "react";
+import toast, { Toaster } from "react-hot-toast";
 import "./Login.css";
+
+const handleX = () => {
+  window.location.href = "http://localhost:3001/x/oauth/signup?signup=true";
+};
 
 const Signup: React.FC = () => {
   const [flag, setFlag] = useState(true);
@@ -24,6 +29,28 @@ const Signup: React.FC = () => {
   });
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
   const navigate = useNavigate();
+
+
+  React.useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("code");
+    const message = params.get("message");
+    const email = params.get("email");
+
+    if (code) {
+      if (parseInt(code) === 0) {
+        toast.success(message, {
+          id: "success1",
+        });
+        console.log("Email:", email);
+      } else {
+        toast.error(message || "Authentication failed", {
+          id: "success3",
+        });
+      }
+    }
+  }, []);
+
 
   const handleOtpChange = (index: number, value: string) => {
     if (/^[0-9]$/.test(value)) {
@@ -198,7 +225,7 @@ const Signup: React.FC = () => {
           ></img>
           <span></span>
         </article>
-
+        <Toaster />
         <div>
           <label className="input input-bordered flex items-center gap-2">
             <input
@@ -297,7 +324,10 @@ const Signup: React.FC = () => {
         )}
 
         {flag && (
-          <button className="btn btn-outline btn-primary whiteText">
+          <button
+            className="btn btn-outline btn-primary whiteText"
+            onClick={handleX}
+          >
             Sign up with{" "}
             <img
               src="https://cdn.prod.website-files.com/5d66bdc65e51a0d114d15891/64cebe1d31f50e161e4c825a_X-logo-transparent-white-twitter.png"
