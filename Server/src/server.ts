@@ -123,6 +123,7 @@ passport.use(
           }
           let connection = await db;
           await registerUser(firstName, lastName, email, "");
+          await flagTwitterUser(email, true);
           const newUser = await findUser(email);
           return done(null, newUser);
         } else {
