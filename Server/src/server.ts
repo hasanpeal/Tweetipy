@@ -25,6 +25,8 @@ import {
   isTwitterUser,
   flagTwitterUser,
   addTwitterUsername,
+  getFollowedProfiles,
+  getTime,
 } from "../database/services/userServices";
 
 env.config();
@@ -310,6 +312,7 @@ app.post("/updatePodcast", async (req, res) => {
   } else {
     try {
       await updatePodcastFile(email, podcast);
+      res.status(200).json({ code: 0, message: "Success" });
     } catch (err) {
       console.log("Error updating podcast on /updatePodcast route");
     }
@@ -444,6 +447,42 @@ app.get("/isTwitterUser", async (req, res) => {
       res.status(200).json({ code: 0, bool: result });
     } catch (err) {
       console.log("Error knowing new user on /isTwitterUser route");
+    }
+  }
+});
+
+// GET route for getting followed profiles
+app.get("/getFollowedProfiles", async (req, res) => {
+  console.log("Directed to GET Route -> /getFollowedProfiles");
+  let connection = await db;
+  const email: string = req.query.email as string;
+  const user = await findUser(email);
+  if (!user) {
+    res.status(400).json({ code: 1, message: "User doesn't exist" });
+  } else {
+    try {
+      const result = await getFollowedProfiles(email);
+      res.status(200).json({ code: 0, profiles: result });
+    } catch (err) {
+      console.log("Error knowing new user on /getFollowedProfiles route");
+    }
+  }
+});
+
+// GET route for getting time
+app.get("/getPreferredTime", async (req, res) => {
+  console.log("Directed to GET Route -> /getPreferredTime");
+  let connection = await db;
+  const email: string = req.query.email as string;
+  const user = await findUser(email);
+  if (!user) {
+    res.status(400).json({ code: 1, message: "User doesn't exist" });
+  } else {
+    try {
+      const result = await getTime(email);
+      res.status(200).json({ code: 0, time: result });
+    } catch (err) {
+      console.log("Error getting preferred time on /getPreferredTime route");
     }
   }
 });

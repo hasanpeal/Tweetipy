@@ -223,6 +223,40 @@ export async function getTwitterUsername(email: string) {
   }
 }
 
+// Get user followed profiles
+export async function getFollowedProfiles(email: string) {
+  try {
+    const user = await User.findOne({ email }).exec();
+    if (!user)
+      console.log(
+        "User not found in getFollowedProfiles function of UserServices.ts"
+      );
+    else {
+      const res = user.twitterProfiles;
+      return res;
+    }
+  } catch (err) {
+    console.log(
+      "Error retriving followed profiles: getFollowedProfiles function in userService.ts"
+    );
+  }
+}
+
+// Get user preferred time
+export async function getTime(email: string) {
+  try {
+    const user = await User.findOne({ email }).exec();
+    if (!user)
+      console.log("User not found in getTime function of UserServices.ts");
+    else {
+      const res = user.emailTime;
+      return res;
+    }
+  } catch (err) {
+    console.log("Error retriving time: getTime function in userService.ts");
+  }
+}
+
 // Validate User by Email
 export async function findUser(email: string) {
   try {
