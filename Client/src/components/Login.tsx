@@ -20,6 +20,7 @@ function Login() {
   const [showOtp, setShowOtp] = useState(false);
   const [load, setLoad] = useState(false);
   const [load2, setLoad2] = useState(false);
+  const [username, setUserName] = useState("");
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
   const [formErrors, setFormErrors] = useState({
     email: "",
@@ -44,34 +45,36 @@ function Login() {
   };
 
   React.useEffect(() => {
-      const params = new URLSearchParams(window.location.search);
-      const code = params.get("code");
-      const message = params.get("message");
-      const capturedEmail = params.get("email");
-      
-      if (code) {
-        if (parseInt(code) === 0) {
-          setEmail(capturedEmail || "");
-          setLoad(true);
-          toast.success(message, {
-            id: "success1",
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("code");
+    const message = params.get("message");
+    const capturedEmail = params.get("email");
+    const capturedUsername = params.get("screen_name");
+
+    if (code) {
+      if (parseInt(code) === 0) {
+        setEmail(capturedEmail || "");
+        setUserName(capturedUsername || "");
+        setLoad(true);
+        toast.success(message, {
+          id: "success1",
+        });
+        const fetchData = async () => {
+          const res = await axios.get("http://localhost:3001/isNewUser", {
+            params: { email: email },
           });
-          const fetchData = async () => {
-            const res = await axios.get("http://localhost:3001/isNewUser", {
-              params: { email: email },
-            });
-            if (res.data.bool) navigate("/newuser", { state: { email } });
-            else navigate("/dashboard", { state: { email } });
-            console.log("Email:", email);
-          };
-          fetchData();
-        } else {
-          toast.error(message || "Authentication failed", {
-            id: "success3",
-          });
-        }
+          console.log(res.data.bool);
+          if (res.data.bool) navigate("/newuser", { state: { email, username } });
+          else navigate("/dashboard", { state: { email, username } });
+        };
+        fetchData();
+      } else {
+        toast.error(message || "Authentication failed", {
+          id: "success3",
+        });
       }
-    }, [email, navigate]);
+    }
+  }, [email, navigate, username]);
 
   async function emailDoesntExist() {
     try {
@@ -436,7 +439,10 @@ function Login() {
           </button>
         )}
         {forget && !passFlag && (
-          <button className="btn btn-outline btn-primary whiteText" onClick={handleX}>
+          <button
+            className="btn btn-outline btn-primary whiteText"
+            onClick={handleX}
+          >
             Login with{" "}
             <img
               src="https://cdn.prod.website-files.com/5d66bdc65e51a0d114d15891/64cebe1d31f50e161e4c825a_X-logo-transparent-white-twitter.png"
@@ -628,7 +634,6 @@ function Login() {
         {load2 && (
           <span className="loading loading-spinner text-primary Load1"></span>
         )}
-
       </div>
     </div>
   );

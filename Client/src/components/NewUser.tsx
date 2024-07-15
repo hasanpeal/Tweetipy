@@ -10,17 +10,66 @@ function NewUser() {
   const [data, setData] = useState<string[]>([]);
   const [time, setTime] = useState<string>("9");
   const [load, setLoad] = useState(false);
-  const [twitter, setTwitter] = useState(true);
+  const [twitter, setTwitter] = useState(false);
   const [enteredUsers, setEnteredUsers] = useState<string[]>([]);
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
   const [loadingSuggestions, setLoadingSuggestions] = useState<boolean>(false);
+  const [addAll, setAddAll] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const inputContainerRef = useRef<HTMLDivElement>(null);
   const cache = useRef<{ [key: string]: string[] }>({});
-
   const location = useLocation();
   const navigate = useNavigate();
-  const { email } = location.state;
+  const { email, username } = location.state;
+
+  const fetchData = useCallback(async () => {
+    try {
+      console.log("Username of account is ", username);
+      console.log("Data getting fetched");
+      const result = await axios.get("http://localhost:3001/isTwitterUser", {
+        params: { email: email },
+      });
+      console.log("Is twitter user? ", result.data.bool);
+      if (result.data.bool) {
+        setTwitter(true);
+        const options = {
+          method: "GET",
+          url: "https://twitter-api45.p.rapidapi.com/following.php",
+          params: {
+            screenname: `${username}`,
+          },
+          headers: {
+            "x-rapidapi-key": import.meta.env.VITE_RAPID_API_KEY,
+            "x-rapidapi-host": "twitter-api45.p.rapidapi.com",
+          },
+        };
+        const temp: string[] = [];
+        const response = await axios.request(options);
+        if (response) console.log("Response req successful");
+        for (let i = 0; i < response.data.following.length; i++) {
+          temp.push(response.data.following[i].screen_name);
+        }
+        setAddAll(temp);
+      }
+    } catch (err) {
+      console.log("Error fetching isTwitterUser and following in NewUser.tsx");
+    }
+  }, [email, username]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  function handleAddAllUser() {
+    setEnteredUsers((prevEnteredUsers) => {
+      return [...prevEnteredUsers, ...addAll];
+    });
+    console.log(enteredUsers);
+  }
+
+  function handleRemoveAllUser() {
+    setEnteredUsers([]);
+  }
 
   const searchAccount = useCallback(async (keyword: string) => {
     const options = {
@@ -127,7 +176,7 @@ function NewUser() {
           email,
           bool: false,
         });
-        navigate("/dashboard", { state: { email } });
+        navigate("/dashboard", { state: { email, username } });
       } catch (err) {
         console.log("Error in handleContinue in NewUser.tsx");
       }
@@ -239,10 +288,16 @@ function NewUser() {
         {twitter && (
           <div>
             <p> Want to add all followed users from X?</p>
-            <button className="btn btn-outline btn-success addAllBtn">
+            <button
+              className="btn btn-outline btn-success addAllBtn"
+              onClick={handleAddAllUser}
+            >
               Add all
             </button>
-            <button className="btn btn-outline btn-error removeAllBtn">
+            <button
+              className="btn btn-outline btn-error removeAllBtn"
+              onClick={handleRemoveAllUser}
+            >
               Remove all
             </button>
           </div>

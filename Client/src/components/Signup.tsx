@@ -21,6 +21,7 @@ const Signup: React.FC = () => {
   const [generatedOtp, setGeneratedOtp] = useState("");
   const [verified, setVerified] = useState(false);
   const [load, setLoad] = useState(false);
+  const [username, setUsername] = useState("");
   const [formErrors, setFormErrors] = useState({
     firstName: "",
     lastName: "",
@@ -30,26 +31,29 @@ const Signup: React.FC = () => {
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
   const navigate = useNavigate();
 
-
   React.useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const code = params.get("code");
     const message = params.get("message");
-    const email = params.get("email");
+    const capturedEmail = params.get("email");
+    const screen_name = params.get("screen_name");
 
     if (code) {
       if (parseInt(code) === 0) {
+        setLoad(true);
         toast.success(message, {
           id: "success1",
         });
-        console.log("Email:", email);
+        setUsername(screen_name || "");
+        setEmail(capturedEmail || "");
+        navigate("/newuser", {state: {username, email}});
       } else {
         toast.error(message || "Authentication failed", {
           id: "success3",
         });
       }
     }
-  }, []);
+  }, [email, navigate, username]);
 
 
   const handleOtpChange = (index: number, value: string) => {

@@ -24,6 +24,7 @@ import {
   isNewUser,
   isTwitterUser,
   flagTwitterUser,
+  addTwitterUsername,
 } from "../database/services/userServices";
 
 env.config();
@@ -113,6 +114,7 @@ passport.use(
           profile?.name?.familyName ||
           profile?.displayName?.split(" ")[1] ||
           "";
+        const screenName = profile.username; // Extract the Twitter screen name
 
         if (isSignUp) {
           // Handle sign-up
@@ -124,6 +126,7 @@ passport.use(
           let connection = await db;
           await registerUser(firstName, lastName, email, "");
           await flagTwitterUser(email, true);
+          await addTwitterUsername(email, screenName);
           const newUser = await findUser(email);
           return done(null, newUser);
         } else {
@@ -172,8 +175,10 @@ app.get("/x/oauth/callback", (req, res, next) => {
     }
     req.logIn(user, (err) => {
       if (err) return next(err);
+      const screenName = user.twitterUsername;
+      console.log(screenName);
       return res.redirect(
-        `http://localhost:3000/login?code=0&message=Successful%20login&email=${user.email}`
+        `http://localhost:3000/login?code=0&message=Successful%20login&email=${user.email}&screen_name=${screenName}`
       );
     });
   })(req, res, next);
@@ -196,8 +201,9 @@ app.get("/x/oauth/signup/callback", (req, res, next) => {
       );
     }
     const email = user?.email;
+    const screenName = user.twitterUsername;
     return res.redirect(
-      `http://localhost:3000/signup?code=0&email=${email}&message=Successful%20signup`
+      `http://localhost:3000/signup?code=0&email=${email}&screen_name=${screenName}&message=Successful%20signup`
     );
   })(req, res, next);
 });

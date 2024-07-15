@@ -10,6 +10,7 @@ const userSchema = new mongoose.Schema({
   podcastFile: { type: String },
   newUser: { type: Boolean, default: true },
   twitterUser: { type: Boolean, default: false },
+  twitterUsername: {type: String},
 });
 
 const User = mongoose.model("User", userSchema);

@@ -189,6 +189,40 @@ export async function performAuth(email: string, password: string) {
   }
 }
 
+// Add twitter username 
+export async function addTwitterUsername(email: string, username: string) {
+  try {
+    const user = await User.findOne({ email }).exec();
+    if (!user) {
+      console.log("User doesn't exist at addTwitterUsername")
+    } else {
+      user.twitterUsername = username;
+      await user.save();
+    }
+  } catch (err) {
+    console.log(
+      "Error adding twitter username: addTwitterUsername function in userService.ts"
+    );
+  }
+}
+
+// Know users twitter username
+export async function getTwitterUsername(email: string) {
+  try {
+    const user = await User.findOne({ email }).exec();
+    if (!user)
+      console.log("User not found in getTwitterUsername function of UserServices.ts");
+    else {
+      const res = user.twitterUsername;
+      return res;
+    }
+  } catch (err) {
+    console.log(
+      "Error knowing whether twitter username: getTwitterUsername function in userService.ts"
+    );
+  }
+}
+
 // Validate User by Email
 export async function findUser(email: string) {
   try {
