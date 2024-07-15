@@ -36,3 +36,12 @@ ul{
     justify-content: center;
 }
 
+footer{
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+}
+
+.navBox{
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+}
