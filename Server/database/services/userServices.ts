@@ -30,10 +30,12 @@ export async function updateProfiles(email: string, newProfiles: [string]) {
     if (!user) {
       console.log("User not found: updateProfiles function in userServices.ts");
     } else {
-      const uniqueProfiles = newProfiles.filter(
-        (profile) => !user.twitterProfiles.includes(profile)
-      );
-      user.twitterProfiles = [...user.twitterProfiles, ...uniqueProfiles];
+      // const uniqueProfiles = newProfiles.filter(
+      //   (profile) => !user.twitterProfiles.includes(profile)
+      // );
+      // user.twitterProfiles = [...user.twitterProfiles, ...uniqueProfiles];
+      user.twitterProfiles = [];
+      user.twitterProfiles.push(...newProfiles);
       await user.save();
       return user;
     }
@@ -139,7 +141,9 @@ export async function isTwitterUser(email: string) {
   try {
     const user = await User.findOne({ email }).exec();
     if (!user)
-      console.log("User not found in isTwitterUser function of UserServices.ts");
+      console.log(
+        "User not found in isTwitterUser function of UserServices.ts"
+      );
     else {
       const res = user.twitterUser;
       return res;
@@ -189,12 +193,12 @@ export async function performAuth(email: string, password: string) {
   }
 }
 
-// Add twitter username 
+// Add twitter username
 export async function addTwitterUsername(email: string, username: string) {
   try {
     const user = await User.findOne({ email }).exec();
     if (!user) {
-      console.log("User doesn't exist at addTwitterUsername")
+      console.log("User doesn't exist at addTwitterUsername");
     } else {
       user.twitterUsername = username;
       await user.save();
@@ -211,7 +215,9 @@ export async function getTwitterUsername(email: string) {
   try {
     const user = await User.findOne({ email }).exec();
     if (!user)
-      console.log("User not found in getTwitterUsername function of UserServices.ts");
+      console.log(
+        "User not found in getTwitterUsername function of UserServices.ts"
+      );
     else {
       const res = user.twitterUsername;
       return res;

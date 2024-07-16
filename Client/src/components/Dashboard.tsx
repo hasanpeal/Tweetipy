@@ -3,118 +3,50 @@ import { useState, useRef, useEffect, useCallback, ChangeEvent } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
 import _ from "lodash";
+import { useLocation } from "react-router-dom";
 
 function Dashboard() {
   const [user, setUser] = useState<string>("");
   const [data, setData] = useState<string[]>([]);
   const [time, setTime] = useState<string>("9");
-  const [enteredUsers, setEnteredUsers] = useState<string[]>([
-    "Oliver",
-    "Charlotte",
-    "James",
-    "Amelia",
-    "Benjamin",
-    "Ava",
-    "William",
-    "Sophia",
-    "Lucas",
-    "Isabella",
-    "Henry",
-    "Mia",
-    "Alexander",
-    "Evelyn",
-    "Michael",
-    "Harper",
-    "Elijah",
-    "Emily",
-    "Daniel",
-    "Abigail",
-    "Matthew",
-    "Ella",
-    "Samuel",
-    "Grace",
-    "David",
-    "Scarlett",
-    "Joseph",
-    "Lily",
-    "Carter",
-    "Aria",
-    "Sebastian",
-    "Chloe",
-    "Owen",
-    "Penelope",
-    "Jackson",
-    "Layla",
-    "Aiden",
-    "Nora",
-    "John",
-    "Zoey",
-    "Luke",
-    "Mila",
-    "Gabriel",
-    "Aubrey",
-    "Anthony",
-    "Hannah",
-    "Isaac",
-    "Ellie",
-    "Dylan",
-    "Stella",
-    "Wyatt",
-    "Zoe",
-    "Jack",
-    "Natalie",
-    "Caleb",
-    "Addison",
-    "Nathan",
-    "Leah",
-    "Thomas",
-    "Hazel",
-    "Ryan",
-    "Violet",
-    "Leo",
-    "Aurora",
-    "Julian",
-    "Savannah",
-    "Lincoln",
-    "Brooklyn",
-    "Isaiah",
-    "Bella",
-    "Andrew",
-    "Claire",
-    "Joshua",
-    "Skylar",
-    "Christopher",
-    "Lucy",
-    "Jayden",
-    "Paisley",
-    "Adam",
-    "Everly",
-    "Grayson",
-    "Elena",
-    "Jonathan",
-    "Anna",
-    "Levi",
-    "Riley",
-    "Theodore",
-    "Samantha",
-    "Logan",
-    "Lillian",
-    "Adrian",
-    "Maya",
-    "Hunter",
-    "Madelyn",
-    "Charles",
-    "Audrey",
-    "Dominic",
-    "Alice",
-    "Ian",
-    "Sarah",
-  ]);
+  const [load, setLoad] = useState(false);
+  const [load2, setLoad2] = useState(false);
+  const [showUpdate1, setShowUpdate1] = useState(true);
+  const [showUpdate2, setShowUpdate2] = useState(true);
+  const [enteredUsers, setEnteredUsers] = useState<string[]>([]);
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
   const [loadingSuggestions, setLoadingSuggestions] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const inputContainerRef = useRef<HTMLDivElement>(null);
   const cache = useRef<{ [key: string]: string[] }>({});
+  const location = useLocation();
+  const { email, username } = location.state;
+
+
+  const fetchData = useCallback(async () => {
+    try {
+      const capturedProfiles = await axios.get(
+        "http://localhost:3001/getFollowedProfiles",
+        {
+          params: { email: email },
+        }
+      );
+      setEnteredUsers(capturedProfiles.data.profiles);
+      const capturedTime = await axios.get(
+        "http://localhost:3001/getPreferredTime",
+        {
+          params: { email: email },
+        }
+      );
+      setTime(capturedTime.data.time);
+    } catch (err) {
+      console.log("Error retriving datas in useEffect");
+    }
+  }, [email]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const searchAccount = useCallback(async (keyword: string) => {
     const options = {
@@ -201,11 +133,19 @@ function Dashboard() {
   }
 
   async function handleUpdateUsernames() {
-    // Add functionality to update usernames
     try {
-      // Replace with actual API call to update usernames
-      console.log("Usernames updated: ", enteredUsers);
-      toast.success("Usernames updated successfully");
+        console.log(enteredUsers);
+      setShowUpdate1(false);
+      setLoad(true);
+      const result = await axios.post("http://localhost:3001/updateProfile", {
+        email,
+        profiles: enteredUsers,
+      });
+      setLoad(false);
+      setShowUpdate1(true);
+      if (result.data.code === 0) {
+        toast.success("Profile lists got updated");
+      } else toast.error("Error updating profiles");
     } catch (error) {
       console.log("Error updating usernames in Dashboard.tsx");
       toast.error("Failed to update usernames");
@@ -219,9 +159,24 @@ function Dashboard() {
     }
   }, [enteredUsers, user]);
 
-    function handleUpdateTime(event: MouseEvent<HTMLButtonElement, MouseEvent>): void {
-        throw new Error("Function not implemented.");
+  async function handleUpdateTime() {
+    try {
+      setShowUpdate2(false);
+      setLoad2(true);
+      const result = await axios.post("http://localhost:3001/updateTime", {
+        email,
+        time,
+      });
+      setLoad2(false);
+      setShowUpdate2(true);
+      if (result.data.code === 0) {
+        toast.success("Time update successful");
+      } else toast.error("Error updating time");
+    } catch (error) {
+      console.log("Error updating time in Dashboard.tsx");
+      toast.error("Failed to update time");
     }
+  }
 
   return (
     <div className="mainDiv">
@@ -289,11 +244,11 @@ function Dashboard() {
           <div className="relative searchBox mt-4 mb-4 flex flex-col items-center w-full">
             <div
               ref={inputContainerRef}
-              className="input input-bordered flex items-center gap-2 userName w-full"
+              className="input input-bordered flex items-center pb-4 gap-2 userName w-full"
             >
               {enteredUsers.map((user, index) => (
                 <span key={index} className="userBox">
-                  {user}
+                  @{user}
                   <button
                     className="removeBtn"
                     onClick={() => handleRemove(index)}
@@ -353,7 +308,10 @@ function Dashboard() {
               className="btn btn-primary btn-wide"
               onClick={handleUpdateUsernames}
             >
-              Update Profile List
+              {showUpdate1 && "Update Profile List"}
+              {load && (
+                <span className="loading loading-dots loading-lg"></span>
+              )}
             </button>
           </div>
           <Toaster />
@@ -387,7 +345,10 @@ function Dashboard() {
                   className="btn btn-primary btn-wide"
                   onClick={handleUpdateTime}
                 >
-                  Update Time
+                  {showUpdate2 && "Update Time"}
+                  {load2 && (
+                    <span className="loading loading-dots loading-lg"></span>
+                  )}
                 </button>
               </div>
             </div>
