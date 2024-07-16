@@ -263,6 +263,42 @@ export async function getTime(email: string) {
   }
 }
 
+// Get users firstname, lastname, email
+export async function getInfo(email: string) {
+  try {
+    const user = await User.findOne({ email }).exec();
+    if (!user)
+      console.log("User not found in getInfo function of UserServices.ts");
+    else {
+      const res = {
+        firstName: user.firstName,
+        lastName: user.lastName,
+      }
+      return res;
+    }
+  } catch (err) {
+    console.log("Error getting info: getInfo function in uberServices.ts");
+  }
+}
+
+// Update users info
+export async function updateInfo(email: string, newfirstName: string, newlastName: string) {
+  try {
+    const user = await User.findOne({ email }).exec();
+    if (!user) {
+      console.log("User doesn't exist at updateInfo");
+    } else {
+      user.firstName = newfirstName;
+      user.lastName = newlastName;
+      await user.save();
+    }
+  } catch (err) {
+    console.log(
+      "Error updating info: updateInfo function in userService.ts"
+    );
+  }
+}
+
 // Validate User by Email
 export async function findUser(email: string) {
   try {

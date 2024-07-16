@@ -2,26 +2,32 @@ import "./Dashboard.css";
 import { useState, useRef, useEffect, useCallback, ChangeEvent } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
-import _ from "lodash";
-import { useLocation } from "react-router-dom";
+import _, { first } from "lodash";
+import { useLocation, useNavigate } from "react-router-dom";
 
 function Dashboard() {
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [user, setUser] = useState<string>("");
   const [data, setData] = useState<string[]>([]);
   const [time, setTime] = useState<string>("9");
   const [load, setLoad] = useState(false);
   const [load2, setLoad2] = useState(false);
+  const [load3, setLoad3] = useState(false);
+  const [load4, setLoad4] = useState(false);
   const [showUpdate1, setShowUpdate1] = useState(true);
   const [showUpdate2, setShowUpdate2] = useState(true);
+  const [showUpdate3, setShowUpdate3] = useState(true);
+  const [showUpdate4, setShowUpdate4] = useState(true);
   const [enteredUsers, setEnteredUsers] = useState<string[]>([]);
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
   const [loadingSuggestions, setLoadingSuggestions] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const inputContainerRef = useRef<HTMLDivElement>(null);
   const cache = useRef<{ [key: string]: string[] }>({});
+  const navigate = useNavigate();
   const location = useLocation();
-  const { email, username } = location.state;
-
+  const { email } = location.state;
 
   const fetchData = useCallback(async () => {
     try {
@@ -39,6 +45,14 @@ function Dashboard() {
         }
       );
       setTime(capturedTime.data.time);
+      const capturedUserInfo = await axios.get(
+        "http://localhost:3001/getUserInfo",
+        {
+          params: { email: email },
+        }
+      );
+      setFirstName(capturedUserInfo.data.userInfo.firstName);
+      setLastName(capturedUserInfo.data.userInfo.lastName);
     } catch (err) {
       console.log("Error retriving datas in useEffect");
     }
@@ -132,6 +146,59 @@ function Dashboard() {
     setEnteredUsers((prevUsers) => prevUsers.filter((_, i) => i !== index));
   }
 
+  async function updateInfos(){
+    try {
+        setShowUpdate3(false);
+        setLoad3(true);
+        const result = await axios.post("http://localhost:3001/updateUserInfo", {email, firstName, lastName});
+        setShowUpdate3(true);
+        setLoad3(false);
+        if(result.data.code === 0) {
+            toast.success("Successful account update")
+        }
+        else {
+            toast.error("Error updating profile");
+        }
+    } catch (err) {
+        console.log("Error in updateInfos in Dashboard.tsx");
+    }
+  }
+
+  async function handleLogout() {
+    try {
+        const res = await axios.post("http://localhost:3001/logout");
+        if(res.data.code === 0){
+            toast.success("Logout successful");
+            navigate("/");
+        } else {
+            toast.error("Logout unsuccessful");
+        }
+    } catch (err) {
+        console.log("Error in handleLogout function in Dashboard.tsx");
+    }
+  }
+
+  async function handleDelete() {
+    try {
+      setShowUpdate4(false);
+      setLoad4(true);
+      const result = await axios.post("http://localhost:3001/deleteUser", {
+        email,
+      });
+      setShowUpdate4(true);
+      setLoad4(false);
+      if (result.data.code === 0) {
+        toast.success("Account deletion successful");
+        await axios.post("http://localhost:3001/logout");
+        navigate("/");
+      } else {
+        toast.error("Error deleting account");
+      }
+    } catch (err) {
+      console.log("Error in handleDelete in Dashboard.tsx");
+    }
+  }
+
   async function handleUpdateUsernames() {
     try {
         console.log(enteredUsers);
@@ -192,10 +259,23 @@ function Dashboard() {
               className="btn btn-ghost btn-circle avatar"
             >
               <div className="w-10 rounded-full">
-                <img
+                {/* <img
                   alt="Profile"
                   src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg"
-                />
+                /> */}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  className="inline-block h-8 w-8 mt-1 stroke-current"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M4 6h16M4 12h16M4 18h16"
+                  ></path>
+                </svg>
               </div>
             </div>
             <ul
@@ -209,26 +289,64 @@ function Dashboard() {
                   }
                 >
                   Profile
-                  <dialog id="my_modal_3" className="modal">
+                  <dialog id="my_modal_3" className="modal accountBox">
                     <div className="modal-box">
                       <form method="dialog">
                         <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
                           ✕
                         </button>
                       </form>
-                      <h3 className="font-bold text-lg">Hello!</h3>
-                      <p className="py-4">
-                        Press ESC key or click on ✕ button to close
-                      </p>
+                      <h3 className="font-bold text-lg mb-5">Account</h3>
+                      <h4 className="mb-1"> &nbsp;First Name</h4>
+                      <input
+                        type="text"
+                        placeholder="Type here"
+                        value={firstName}
+                        onChange={(event) => setFirstName(event.target.value)}
+                        className="input input-bordered input-md w-full max-w-lg mb-4"
+                      />
+                      <h4 className="mb-1"> &nbsp;Last Name</h4>
+                      <input
+                        type="text"
+                        placeholder="Type here"
+                        value={lastName}
+                        onChange={(event) => setLastName(event.target.value)}
+                        className="input input-bordered input-md w-full max-w-lg mb-4"
+                      />
+                      <h4 className="mb-1"> &nbsp;Email</h4>
+                      <input
+                        type="email"
+                        placeholder="Type here"
+                        value={email}
+                        className="input input-bordered input-md w-full max-w-lg mb-4"
+                        disabled
+                      />
+                      <div className="buttons">
+                        <button
+                          className="btn btn-success"
+                          onClick={updateInfos}
+                        >
+                          {showUpdate3 && "Update"}
+                          {load3 && (
+                            <span className="loading loading-dots loading-lg"></span>
+                          )}
+                        </button>
+                        <button
+                          className="btn btn-error"
+                          onClick={handleDelete}
+                        >
+                          {showUpdate4 && "Delete Account"}
+                          {load4 && (
+                            <span className="loading loading-dots loading-lg"></span>
+                          )}
+                        </button>
+                      </div>
                     </div>
                   </dialog>
                 </a>
               </li>
               <li>
-                <a>Settings</a>
-              </li>
-              <li>
-                <a>Logout</a>
+                <a onClick={handleLogout}>Logout</a>
               </li>
             </ul>
           </div>

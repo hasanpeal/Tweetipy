@@ -27,6 +27,8 @@ import {
   addTwitterUsername,
   getFollowedProfiles,
   getTime,
+  getInfo,
+  updateInfo,
 } from "../database/services/userServices";
 
 env.config();
@@ -236,6 +238,7 @@ app.post("/logout", (req, res) => {
           .status(200)
           .json({ code: 1, message: "Error destroying session" });
       }
+      console.log("Signout successful");
       res.status(200).json({ code: 0, message: "Logout successful" });
     });
   });
@@ -483,6 +486,62 @@ app.get("/getPreferredTime", async (req, res) => {
       res.status(200).json({ code: 0, time: result });
     } catch (err) {
       console.log("Error getting preferred time on /getPreferredTime route");
+    }
+  }
+});
+
+// GET route for getting time
+app.get("/getUserInfo", async (req, res) => {
+  console.log("Directed to GET Route -> /getUserInfo");
+  let connection = await db;
+  const email: string = req.query.email as string;
+  const user = await findUser(email);
+  if (!user) {
+    res.status(400).json({ code: 1, message: "User doesn't exist" });
+  } else {
+    try {
+      const result = await getInfo(email);
+      res.status(200).json({ code: 0, userInfo: result });
+    } catch (err) {
+      console.log("Error getting users info on /getUserInfo route");
+    }
+  }
+});
+
+// POST route for updating user info
+app.post("/updateUserInfo", async (req, res) => {
+  console.log("Directed to GET Route -> /updateUserInfo");
+  let connection = await db;
+  const email: string = req.body.email;
+  const firstName: string = req.body.firstName;
+  const lastName: string = req.body.lastName;
+  const user = await findUser(email);
+  if (!user) {
+    res.status(400).json({ code: 1, message: "User doesn't exist" });
+  } else {
+    try {
+      const result = await updateInfo(email, firstName, lastName);
+      res.status(200).json({ code: 0 });
+    } catch (err) {
+      console.log("Error updating user info on /updateUserInfo route");
+    }
+  }
+});
+
+// Delete a user
+app.post("/deleteUser", async (req, res) => {
+  console.log("Directed to GET Route -> /updateUserInfo");
+  let connection = await db;
+  const email: string = req.body.email;
+  const user = await findUser(email);
+  if (!user) {
+    res.status(400).json({ code: 1, message: "User doesn't exist" });
+  } else {
+    try {
+      const result = await User.deleteOne({ email: email });
+      res.status(200).json({ code: 0 });
+    } catch (err) {
+      console.log("Error deleting user info on /deleteUser route");
     }
   }
 });
