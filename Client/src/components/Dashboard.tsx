@@ -15,6 +15,8 @@ function Dashboard() {
   const [load2, setLoad2] = useState(false);
   const [load3, setLoad3] = useState(false);
   const [load4, setLoad4] = useState(false);
+  const [podcast, setPodcast] = useState("");
+  const [newsletter, setNewsletter] = useState("");
   const [showUpdate1, setShowUpdate1] = useState(true);
   const [showUpdate2, setShowUpdate2] = useState(true);
   const [showUpdate3, setShowUpdate3] = useState(true);
@@ -53,6 +55,20 @@ function Dashboard() {
       );
       setFirstName(capturedUserInfo.data.userInfo.firstName);
       setLastName(capturedUserInfo.data.userInfo.lastName);
+      const capturedPodcast = await axios.get(
+        "http://localhost:3001/getPodcast",
+        {
+          params: { email: email },
+        }
+      );
+      setPodcast(capturedPodcast.data.podcast);
+      const capturedNewsletter = await axios.get(
+        "http://localhost:3001/getNewsletter",
+        {
+          params: { email: email },
+        }
+      );
+      setNewsletter(capturedNewsletter.data.newsletter);
     } catch (err) {
       console.log("Error retriving datas in useEffect");
     }
@@ -477,7 +493,7 @@ function Dashboard() {
             <div className="audioDiv">
               <audio
                 controls
-                src="https://stream.mux.com/O4h5z00885HEucNNa1rV02wZapcGp01FXXoJd35AHmGX7g/audio.m4a"
+                src={podcast}
                 crossOrigin="anonymous"
                 className="audioFile"
               ></audio>
@@ -488,31 +504,7 @@ function Dashboard() {
               Latest newsletter
             </article>
             <p>
-              In the 48 hours before he opened fire on former President Donald
-              Trump, 20-year-old Thomas Matthew Crooks made a series of stops in
-              and around his suburban Pittsburgh hometown. On Friday, he went to
-              a shooting range where he was a member, and practiced firing, a
-              law enforcement official told CNN. The next morning, Crooks went
-              to a Home Depot, where he bought a five-foot ladder, and a gun
-              store, where he purchased 50 rounds of ammunition, the official
-              said. Then, Crooks drove his Hyundai Sonata about an hour north,
-              joining thousands of people from around the region who flocked to
-              Trump’s rally in Butler, Pennsylvania. He parked the car outside
-              the rally, with an improvised explosive device hidden in the trunk
-              that was wired to a transmitter he carried, the official said.
-              Then, investigators believe, he used his newly-bought ladder to
-              scale a nearby building, and opened fire on the former president.
-              As investigators continue to search for a motive behind the
-              attempted assassination, they are scrutinizing Crooks’ movements
-              before the attack and trying to piece together a timeline of his
-              actions leading up to it. Yet nearly 48 hours after the shooting,
-              investigators are struck by the lack of leads they’re finding
-              about Crooks’ mindset and possible motives. Even after
-              successfully breaking into his phone and searching his computer,
-              scouring his search history and bedroom, and interviewing his
-              family and friends, agents still haven’t found evidence that would
-              suggest political or ideological impetus for the shooting, law
-              enforcement sources told CNN.
+              {newsletter}
             </p>
           </div>
         </div>
