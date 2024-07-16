@@ -30,6 +30,7 @@ import {
   getInfo,
   updateInfo,
 } from "../database/services/userServices";
+import "./digest";
 
 env.config();
 const app = express();
@@ -542,6 +543,42 @@ app.post("/deleteUser", async (req, res) => {
       res.status(200).json({ code: 0 });
     } catch (err) {
       console.log("Error deleting user info on /deleteUser route");
+    }
+  }
+});
+
+// GET podcast file
+app.get("/getPodcast", async (req, res) => {
+  console.log("Directed to GET Route -> /getPodcast");
+  let connection = await db;
+  const email: string = req.query.email as string;
+  const user = await findUser(email);
+  if (!user) {
+    res.status(400).json({ code: 1, message: "User doesn't exist" });
+  } else {
+    try {
+      const result = user.podcastFile;
+      res.status(200).json({ code: 0, podcast: result });
+    } catch (err) {
+      console.log("Error getting podcast on /getPodcast route");
+    }
+  }
+});
+
+// GET newsletter
+app.get("/getNewsletter", async (req, res) => {
+  console.log("Directed to GET Route -> /getNewsletter");
+  let connection = await db;
+  const email: string = req.query.email as string;
+  const user = await findUser(email);
+  if (!user) {
+    res.status(400).json({ code: 1, message: "User doesn't exist" });
+  } else {
+    try {
+      const result = user.newsletter;
+      res.status(200).json({ code: 0, newsletter: result });
+    } catch (err) {
+      console.log("Error getting podcast on /getNewsletter route");
     }
   }
 });

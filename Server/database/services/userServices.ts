@@ -273,7 +273,7 @@ export async function getInfo(email: string) {
       const res = {
         firstName: user.firstName,
         lastName: user.lastName,
-      }
+      };
       return res;
     }
   } catch (err) {
@@ -282,7 +282,11 @@ export async function getInfo(email: string) {
 }
 
 // Update users info
-export async function updateInfo(email: string, newfirstName: string, newlastName: string) {
+export async function updateInfo(
+  email: string,
+  newfirstName: string,
+  newlastName: string
+) {
   try {
     const user = await User.findOne({ email }).exec();
     if (!user) {
@@ -293,9 +297,7 @@ export async function updateInfo(email: string, newfirstName: string, newlastNam
       await user.save();
     }
   } catch (err) {
-    console.log(
-      "Error updating info: updateInfo function in userService.ts"
-    );
+    console.log("Error updating info: updateInfo function in userService.ts");
   }
 }
 
