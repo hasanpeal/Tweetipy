@@ -353,7 +353,7 @@ function Dashboard() {
         </div>
       </div>
 
-      <div className="min-h-screen grid sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-4 p-4 gridContent">
+      <div className="min-h-screen grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 p-4 gridContent">
         {/* First Column */}
         <div className="p-4 column1 flex flex-col items-center w-full">
           <article className="prose prose-lg text-center text-white">
@@ -436,12 +436,11 @@ function Dashboard() {
         </div>
 
         {/* Second Column */}
-        <div className="grid grid-rows-3 gap-4">
-          <div className="p-4 row1">
+        <div className="flex flex-col gap-4 secCol flex-grow">
+          <div className="p-4 row1 digestDiv flex-grow">
             <article className="prose prose-lg mb-0.5 text-white">
               Daily digest time
             </article>
-
             <div className="p-2.5 timeGrid">
               <label className="form-control w-full timeBox">
                 <select
@@ -471,15 +470,50 @@ function Dashboard() {
               </div>
             </div>
           </div>
-          <div className="p-4 row2">
+          <div className="p-4 row2 podcastDiv flex-grow">
             <article className="prose prose-lg text-white">
               Latest podcast
             </article>
+            <div className="audioDiv">
+              <audio
+                controls
+                src="https://stream.mux.com/O4h5z00885HEucNNa1rV02wZapcGp01FXXoJd35AHmGX7g/audio.m4a"
+                crossOrigin="anonymous"
+                className="audioFile"
+              ></audio>
+            </div>
           </div>
-          <div className="p-4 row3">
-            <article className="prose prose-lg text-white">
+          <div className="p-4 row3 newsDiv flex-grow">
+            <article className="prose prose-lg text-white mb-1">
               Latest newsletter
             </article>
+            <p>
+              In the 48 hours before he opened fire on former President Donald
+              Trump, 20-year-old Thomas Matthew Crooks made a series of stops in
+              and around his suburban Pittsburgh hometown. On Friday, he went to
+              a shooting range where he was a member, and practiced firing, a
+              law enforcement official told CNN. The next morning, Crooks went
+              to a Home Depot, where he bought a five-foot ladder, and a gun
+              store, where he purchased 50 rounds of ammunition, the official
+              said. Then, Crooks drove his Hyundai Sonata about an hour north,
+              joining thousands of people from around the region who flocked to
+              Trump’s rally in Butler, Pennsylvania. He parked the car outside
+              the rally, with an improvised explosive device hidden in the trunk
+              that was wired to a transmitter he carried, the official said.
+              Then, investigators believe, he used his newly-bought ladder to
+              scale a nearby building, and opened fire on the former president.
+              As investigators continue to search for a motive behind the
+              attempted assassination, they are scrutinizing Crooks’ movements
+              before the attack and trying to piece together a timeline of his
+              actions leading up to it. Yet nearly 48 hours after the shooting,
+              investigators are struck by the lack of leads they’re finding
+              about Crooks’ mindset and possible motives. Even after
+              successfully breaking into his phone and searching his computer,
+              scouring his search history and bedroom, and interviewing his
+              family and friends, agents still haven’t found evidence that would
+              suggest political or ideological impetus for the shooting, law
+              enforcement sources told CNN.
+            </p>
           </div>
         </div>
       </div>
