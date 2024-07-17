@@ -30,6 +30,8 @@
 
 .tit{
     margin-bottom: 1px;
+    display: flex;
+    justify-content: center;
 }
 
 .features{

@@ -2,7 +2,7 @@ import "./Dashboard.css";
 import { useState, useRef, useEffect, useCallback, ChangeEvent } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
-import _, { first } from "lodash";
+import _ from "lodash";
 import { useLocation, useNavigate } from "react-router-dom";
 
 function Dashboard() {
@@ -30,6 +30,10 @@ function Dashboard() {
   const navigate = useNavigate();
   const location = useLocation();
   const { email } = location.state;
+
+  useEffect(() => {
+    document.title = `${firstName}'s Dashboard`;x
+  }, [firstName])
 
   const fetchData = useCallback(async () => {
     try {
@@ -300,9 +304,15 @@ function Dashboard() {
             >
               <li>
                 <a
-                  onClick={() =>
-                    document.getElementById("my_modal_3")?.showModal()
-                  }
+                  // onClick={() =>
+                  //   document.getElementById("my_modal_3")?.showModal()
+                  // }
+                  onClick={() => {
+                    const dialog = document.getElementById("my_modal_3");
+                    if (dialog instanceof HTMLDialogElement) {
+                      dialog.showModal();
+                    }
+                  }}
                 >
                   Profile
                   <dialog id="my_modal_3" className="modal accountBox">
@@ -503,9 +513,7 @@ function Dashboard() {
             <article className="prose prose-lg text-white mb-1">
               Latest newsletter
             </article>
-            <p>
-              {newsletter}
-            </p>
+            <p className="newsL">{newsletter}</p>
           </div>
         </div>
       </div>

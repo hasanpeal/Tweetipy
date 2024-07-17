@@ -50,7 +50,7 @@ function Login() {
     const message = params.get("message");
     const capturedEmail = params.get("email");
     const capturedUsername = params.get("screen_name");
-
+    document.title = "Tweetipy | Login"
     if (code) {
       if (parseInt(code) === 0) {
         setEmail(capturedEmail || "");

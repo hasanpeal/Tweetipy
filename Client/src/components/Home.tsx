@@ -1,5 +1,9 @@
+import { useNavigate } from "react-router-dom";
 import "./Home.css";
+
 function Home() {
+  const navigate = useNavigate();
+  document.title = "Tweetipy | Home"
   return (
     <div className="home">
       {/*  */}
@@ -49,16 +53,16 @@ function Home() {
         <div className="navbar-end hidden lg:flex menu1">
           <ul className="menu menu-horizontal px-1">
             <li>
-              <a>Sign in</a>
+              <a onClick={() => navigate("/login")}>Sign in</a>
             </li>
             <li>
-              <a> Sign up</a>
+              <a onClick={() => navigate("/signup")}> Sign up</a>
             </li>
             <li>
-              <a>Contact us</a>
+              <a onClick={() => navigate("/login")}>Contact us</a>
             </li>
             <li>
-              <a>About us</a>
+              <a onClick={() => navigate("/aboutus")}>About us</a>
             </li>
             {/* <li>
               <a>Ab</a>
@@ -79,7 +83,12 @@ function Home() {
               and deliver personalized newsletters and podcasts, bringing you
               the latest updates from your favorite Twitter/X accounts.
             </article>
-            <button className="btn btn-primary">Get Started</button>
+            <button
+              className="btn btn-primary"
+              onClick={() => navigate("/signup")}
+            >
+              Get Started
+            </button>
           </div>
         </div>
       </div>

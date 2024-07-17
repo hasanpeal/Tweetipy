@@ -30,7 +30,8 @@ const Signup: React.FC = () => {
   });
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
   const navigate = useNavigate();
-
+  document.title = "Tweetipy | Signup";
+  
   React.useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const code = params.get("code");

@@ -21,7 +21,7 @@ function NewUser() {
   const location = useLocation();
   const navigate = useNavigate();
   const { email, username } = location.state;
-
+  document.title = "Tweetipy | New User"
   const fetchData = useCallback(async () => {
     try {
       console.log("Username of account is ", username);
