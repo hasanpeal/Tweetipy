@@ -32,7 +32,7 @@ function Dashboard() {
   const { email } = location.state;
 
   useEffect(() => {
-    document.title = `${firstName}'s Dashboard`;x
+    document.title = `${firstName}'s Dashboard`;
   }, [firstName])
 
   const fetchData = useCallback(async () => {
