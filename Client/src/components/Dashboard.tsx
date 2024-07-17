@@ -67,21 +67,21 @@ function Dashboard() {
   const fetchData = useCallback(async () => {
     try {
       const capturedProfiles = await axios.get(
-        "http://localhost:3001/getFollowedProfiles",
+        `${import.meta.env.VITE_SERVER}/getFollowedProfiles`,
         {
           params: { email: email },
         }
       );
       setEnteredUsers(capturedProfiles.data.profiles);
       const capturedTime = await axios.get(
-        "http://localhost:3001/getPreferredTime",
+        `${import.meta.env.VITE_SERVER}/getPreferredTime`,
         {
           params: { email: email },
         }
       );
       setTime(capturedTime.data.time);
       const capturedUserInfo = await axios.get(
-        "http://localhost:3001/getUserInfo",
+        `${import.meta.env.VITE_SERVER}/getUserInfo`,
         {
           params: { email: email },
         }
@@ -89,14 +89,14 @@ function Dashboard() {
       setFirstName(capturedUserInfo.data.userInfo.firstName);
       setLastName(capturedUserInfo.data.userInfo.lastName);
       const capturedPodcast = await axios.get(
-        "http://localhost:3001/getPodcast",
+        `${import.meta.env.VITE_SERVER}/getPodcast`,
         {
           params: { email: email },
         }
       );
       setPodcast(capturedPodcast.data.podcast);
       const capturedNewsletter = await axios.get(
-        "http://localhost:3001/getNewsletter",
+        `${import.meta.env.VITE_SERVER}/getNewsletter`,
         {
           params: { email: email },
         }
@@ -199,7 +199,7 @@ function Dashboard() {
     try {
         setShowUpdate3(false);
         setLoad3(true);
-        const result = await axios.post("http://localhost:3001/updateUserInfo", {email, firstName, lastName});
+        const result = await axios.post(`${import.meta.env.VITE_SERVER}/updateUserInfo`, {email, firstName, lastName});
         setShowUpdate3(true);
         setLoad3(false);
         if(result.data.code === 0) {
@@ -215,7 +215,7 @@ function Dashboard() {
 
   async function handleLogout() {
     try {
-        const res = await axios.post("http://localhost:3001/logout");
+        const res = await axios.post(`${import.meta.env.VITE_SERVER}/logout`);
         if(res.data.code === 0){
             toast.success("Logout successful");
             navigate("/");
@@ -231,14 +231,14 @@ function Dashboard() {
     try {
       setShowUpdate4(false);
       setLoad4(true);
-      const result = await axios.post("http://localhost:3001/deleteUser", {
+      const result = await axios.post(`${import.meta.env.VITE_SERVER}/deleteUser`, {
         email,
       });
       setShowUpdate4(true);
       setLoad4(false);
       if (result.data.code === 0) {
         toast.success("Account deletion successful");
-        await axios.post("http://localhost:3001/logout");
+        await axios.post(`${import.meta.env.VITE_SERVER}/logout`);
         navigate("/");
       } else {
         toast.error("Error deleting account");
@@ -253,7 +253,7 @@ function Dashboard() {
         console.log(enteredUsers);
       setShowUpdate1(false);
       setLoad(true);
-      const result = await axios.post("http://localhost:3001/updateProfile", {
+      const result = await axios.post(`${import.meta.env.VITE_SERVER}/updateProfile`, {
         email,
         profiles: enteredUsers,
       });
@@ -279,7 +279,7 @@ function Dashboard() {
     try {
       setShowUpdate2(false);
       setLoad2(true);
-      const result = await axios.post("http://localhost:3001/updateTime", {
+      const result = await axios.post(`${import.meta.env.VITE_SERVER}/updateTime`, {
         email,
         time,
       });

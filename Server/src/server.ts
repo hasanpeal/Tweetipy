@@ -99,7 +99,7 @@ passport.use(
     {
       consumerKey: process.env.TWITTER_CONSUMER_KEY!,
       consumerSecret: process.env.TWITTER_CONSUMER_SECRET!,
-      callbackURL: "http://localhost:3001/x/oauth/callback",
+      callbackURL: `${process.env.SERVER}/x/oauth/callback`,
       includeEmail: true,
       passReqToCallback: true,
     },
@@ -175,7 +175,7 @@ app.get("/x/oauth/callback", (req, res, next) => {
     if (!user) {
       const message = req.flash("error")[0] || "Authentication failed";
       return res.redirect(
-        `http://localhost:3000/login?code=1&message=${message}`
+        `${process.env.CLIENT}/login?code=1&message=${message}`
       );
     }
     req.logIn(user, (err) => {
@@ -183,7 +183,7 @@ app.get("/x/oauth/callback", (req, res, next) => {
       const screenName = user.twitterUsername;
       console.log(screenName);
       return res.redirect(
-        `http://localhost:3000/login?code=0&message=Successful%20login&email=${user.email}&screen_name=${screenName}`
+        `${process.env.CLIENT}/login?code=0&message=Successful%20login&email=${user.email}&screen_name=${screenName}`
       );
     });
   })(req, res, next);
@@ -202,13 +202,13 @@ app.get("/x/oauth/signup/callback", (req, res, next) => {
     if (!user) {
       const message = req.flash("error")[0] || "Authentication failed";
       return res.redirect(
-        `http://localhost:3000/signup?code=1&message=${message}`
+        `${process.env.CLIENT}/signup?code=1&message=${message}`
       );
     }
     const email = user?.email;
     const screenName = user.twitterUsername;
     return res.redirect(
-      `http://localhost:3000/signup?code=0&email=${email}&screen_name=${screenName}&message=Successful%20signup`
+      `${process.env.CLIENT}/signup?code=0&email=${email}&screen_name=${screenName}&message=Successful%20signup`
     );
   })(req, res, next);
 });

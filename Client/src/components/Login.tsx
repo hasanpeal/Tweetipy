@@ -70,7 +70,7 @@ function Login() {
   };
 
   const handleX = () => {
-    window.location.href = "http://localhost:3001/x/oauth/signin";
+    window.location.href = `${import.meta.env.VITE_SERVER}/x/oauth/signin`;
   };
 
   React.useEffect(() => {
@@ -89,9 +89,12 @@ function Login() {
           id: "success1",
         });
         const fetchData = async () => {
-          const res = await axios.get("http://localhost:3001/isNewUser", {
-            params: { email: email },
-          });
+          const res = await axios.get(
+            `${import.meta.env.VITE_SERVER}/isNewUser`,
+            {
+              params: { email: email },
+            }
+          );
           console.log(res.data.bool);
           if (res.data.bool) navigate("/newuser", { state: { email, username } });
           else navigate("/dashboard", { state: { email, username } });
@@ -107,9 +110,12 @@ function Login() {
 
   async function emailDoesntExist() {
     try {
-      const result = await axios.get("http://localhost:3001/validateEmail", {
-        params: { email: email },
-      });
+      const result = await axios.get(
+        `${import.meta.env.VITE_SERVER}/validateEmail`,
+        {
+          params: { email: email },
+        }
+      );
       const code = result.data.code;
       console.log("Email exist code: ", code);
       if (code === 0) return false;
@@ -122,19 +128,25 @@ function Login() {
   const handleLogin = async () => {
     if (await validateForm()) {
       try {
-        const result = await axios.post("http://localhost:3001/login", {
-          email,
-          password,
-        });
+        const result = await axios.post(
+          `${import.meta.env.VITE_SERVER}/login`,
+          {
+            email,
+            password,
+          }
+        );
         const { code, message } = result.data;
         console.log(code);
         console.log(message);
         if (code === 0) {
           toast.success(message);
           setLoad(true);
-          const res = await axios.get("http://localhost:3001/isNewUser", {
-            params: { email: email },
-          });
+          const res = await axios.get(
+            `${import.meta.env.VITE_SERVER}/isNewUser`,
+            {
+              params: { email: email },
+            }
+          );
           if (res.data.bool) navigate("/newuser", { state: { email } });
           else navigate("/dashboard", { state: { email } });
         } else {
@@ -155,9 +167,12 @@ function Login() {
 
   const generateOtp = async () => {
     try {
-      const result = await axios.post("http://localhost:3001/sentOTP", {
-        email: email,
-      });
+      const result = await axios.post(
+        `${import.meta.env.VITE_SERVER}/sentOTP`,
+        {
+          email: email,
+        }
+      );
       setGeneratedOtp(result.data.otp);
     } catch (error) {
       console.log("Error calling http://localhost:3000/sentOTP on login.tsx");
@@ -346,7 +361,7 @@ function Login() {
   async function resetPassword() {
     if (validateNewPassword()) {
       try {
-        const result = await axios.post("http://localhost:3001/resetPassword", {
+        const result = await axios.post(`${import.meta.env.VITE_SERVER}/resetPassword`, {
           email: email,
           newPassword: confirmNewPassword,
         });

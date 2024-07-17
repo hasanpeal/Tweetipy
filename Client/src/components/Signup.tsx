@@ -7,7 +7,7 @@ import emailjs from "@emailjs/browser";
 import "./Login.css";
 
 const handleX = () => {
-  window.location.href = "http://localhost:3001/x/oauth/signup?signup=true";
+  window.location.href = `${import.meta.env.VITE_SERVER}/x/oauth/signup?signup=true`;
 };
 
 const Signup: React.FC = () => {
@@ -114,7 +114,7 @@ const Signup: React.FC = () => {
 
   async function emailAlreadyExist() {
     try {
-      const result = await axios.get("http://localhost:3001/validateEmail", {
+      const result = await axios.get(`${import.meta.env.VITE_SERVER}/validateEmail`, {
         params: { email: email },
       });
       const code = result.data.code;
@@ -206,7 +206,7 @@ const Signup: React.FC = () => {
       if (generatedOtp === otp.join("")) {
         try {
           setLoad(true);
-          const result = await axios.post("http://localhost:3001/register", {
+          const result = await axios.post(`${import.meta.env.VITE_SERVER}/register`, {
             firstName,
             lastName,
             email,
@@ -236,7 +236,7 @@ const Signup: React.FC = () => {
 
   const generateOtp = async () => {
     try {
-      const result = await axios.post("http://localhost:3001/sentOTP", {
+      const result = await axios.post(`${import.meta.env.VITE_SERVER}/sentOTP`, {
         email: email,
       });
       setGeneratedOtp(result.data.otp);

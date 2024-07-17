@@ -56,7 +56,7 @@ function NewUser() {
     try {
       console.log("Username of account is ", username);
       console.log("Data getting fetched");
-      const result = await axios.get("http://localhost:3001/isTwitterUser", {
+      const result = await axios.get(`${import.meta.env.VITE_SERVER}/isTwitterUser`, {
         params: { email: email },
       });
       console.log("Is twitter user? ", result.data.bool);
@@ -197,12 +197,12 @@ function NewUser() {
     else {
       try {
         setLoad(true);
-        await axios.post("http://localhost:3001/updateTime", { email, time });
-        await axios.post("http://localhost:3001/updateProfile", {
+        await axios.post(`${import.meta.env.VITE_SERVER}/updateTime`, { email, time });
+        await axios.post(`${import.meta.env.VITE_SERVER}/updateProfile`, {
           email,
           profiles: enteredUsers,
         });
-        await axios.post("http://localhost:3001/updateNewUser", {
+        await axios.post(`${import.meta.env.VITE_SERVER}/updateNewUser`, {
           email,
           bool: false,
         });
