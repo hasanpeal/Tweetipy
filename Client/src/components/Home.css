@@ -18,6 +18,20 @@
     justify-content: center;
 }
 
+.contactForm{
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.lab{
+    margin-bottom: -10px;;
+}
+.formInput{
+    background-color:oklch(var(--b2));
+    border-radius: 12px;
+}
+
 .heroContainer{
 
     height: 500px

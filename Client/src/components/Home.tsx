@@ -1,9 +1,39 @@
 import { useNavigate } from "react-router-dom";
+import emailjs from "@emailjs/browser";
 import "./Home.css";
+import { useRef } from "react";
+import toast, { Toaster } from "react-hot-toast";
 
 function Home() {
   const navigate = useNavigate();
-  document.title = "Tweetipy | Home"
+  document.title = "Tweetipy | Home";
+  const form = useRef<HTMLFormElement>(null);
+
+  const sendEmail = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (form.current) {
+      emailjs
+        .sendForm(
+          import.meta.env.VITE_SERVICE_ID,
+          import.meta.env.VITE_TEMPLATE_ID,
+          form.current,
+          {
+            publicKey: import.meta.env.VITE_PUBLIC_KEY,
+          }
+        )
+        .then(
+          () => {
+            console.log("SUCCESS!");
+            toast.success("Email sent successfully");
+          },
+          (error: { text: unknown }) => {
+            console.log("FAILED...", error.text);
+            toast.error("Failed to send email");
+          }
+        );
+    }
+  };
   return (
     <div className="home">
       {/*  */}
@@ -32,23 +62,34 @@ function Home() {
               className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
             >
               <li>
-                <a>Sign in</a>
+                <a onClick={() => navigate("/login")}>Sign in</a>
               </li>
               <li>
-                <a>Sign up</a>
+                <a onClick={() => navigate("/signup")}>Sign up</a>
               </li>
               <li>
-                <a>Contact us</a>
+                <a
+                  onClick={() => {
+                    const modal = document.getElementById(
+                      "my_modal_3"
+                    ) as HTMLDialogElement;
+                    if (modal) {
+                      modal.showModal();
+                    }
+                  }}
+                >
+                  Contact us
+                </a>
               </li>
               <li>
-                <a>Terms and condition</a>
+                <a onClick={() => navigate("/aboutus")}>About us</a>
               </li>
               {/* <li>
                 <a>Item 3</a>
               </li> */}
             </ul>
           </div>
-          <a className="btn btn-ghost text-xl">Tweetipy</a>
+          <a className="btn btn-ghost text-xl" onClick={()=> window.location.reload()}>Tweetipy</a>
         </div>
         <div className="navbar-end hidden lg:flex menu1">
           <ul className="menu menu-horizontal px-1">
@@ -59,17 +100,66 @@ function Home() {
               <a onClick={() => navigate("/signup")}> Sign up</a>
             </li>
             <li>
-              <a onClick={() => navigate("/login")}>Contact us</a>
+              <a
+                onClick={() => {
+                  const modal = document.getElementById(
+                    "my_modal_3"
+                  ) as HTMLDialogElement;
+                  if (modal) {
+                    modal.showModal();
+                  }
+                }}
+              >
+                Contact us
+              </a>
             </li>
             <li>
               <a onClick={() => navigate("/aboutus")}>About us</a>
             </li>
-            {/* <li>
-              <a>Ab</a>
-            </li> */}
           </ul>
         </div>
       </div>
+
+      <Toaster />
+
+      <dialog id="my_modal_3" className="modal">
+        <div className="modal-box">
+          <form method="dialog">
+            {/* if there is a button in form, it will close the modal */}
+            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
+              ✕
+            </button>
+          </form>
+          <form className="contactForm" ref={form} onSubmit={sendEmail}>
+            <label className="lab">&nbsp;Name</label>
+            <input
+              type="text"
+              name="user_name"
+              className="input-bordered input-md w-full max-w-md formInput"
+            />
+            <label className="lab">&nbsp;Email</label>
+            <input
+              type="email"
+              name="user_email"
+              className="input-bordered input-md w-full max-w-md formInput"
+            />
+            <label className="lab">&nbsp;Message</label>
+            <textarea
+              name="message"
+              className="textarea bg-base-200 textarea-bordered textarea-lg w-full max-w-md formInput"
+              rows={5}
+            />
+            <button
+              className="btn btn-active btn-primary my-4"
+              type="submit"
+              value="Send"
+            >
+              {" "}
+              Submit{" "}
+            </button>
+          </form>
+        </div>
+      </dialog>
 
       {/* Hero */}
       <div className="hero bg-base-200  heroContainer">

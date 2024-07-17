@@ -54,7 +54,12 @@ async function getRecentTweets(email: string) {
           });
         });
         // Generate the newsletter
-        const newsletter = await generateNewsletter(res);
+        let newsletter = "";
+        if(!user.twitterProfiles || user.twitterProfiles.length === 0){
+          newsletter = "Not enough followed profiles to generate newsletter"
+        } else {
+          newsletter = await generateNewsletter(res);
+        }
         if (!newsletter) {
           console.error("Error generating newletter");
         }

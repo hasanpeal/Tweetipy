@@ -1,0 +1,10 @@
+.features{
+    display: flex;
+    flex-wrap: wrap;
+    flex:1;
+    
+}
+
+.abt{
+    text-align: left;
+}

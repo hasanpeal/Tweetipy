@@ -5,6 +5,7 @@ import Signup from "./components/Signup";
 import NewUser from "./components/NewUser"
 import Dashboard from "./components/Dashboard";
 import Home from "./components/Home";
+import About from "./components/About";
 
 function App() {
   return (
@@ -18,6 +19,9 @@ function App() {
             {" "}
           </Route>
           <Route path="/signup" element={<Signup />}>
+            {" "}
+          </Route>
+          <Route path="/aboutus" element={<About/>}>
             {" "}
           </Route>
           <Route path="/newuser" element={<NewUser />}>
