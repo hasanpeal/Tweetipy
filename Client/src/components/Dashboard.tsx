@@ -298,7 +298,12 @@ function Dashboard() {
     <div className="mainDiv">
       <div className="navbar bg-base- navBox bg-neutral">
         <div className="flex-1">
-          <a className="btn btn-ghost text-xl text-white" onClick={() => window.location.reload()}>Tweetipy</a>
+          <a
+            className="btn btn-ghost text-xl text-white"
+            onClick={() => window.location.reload()}
+          >
+            Tweetipy
+          </a>
         </div>
         <div className="flex-none gap-2">
           <div className="dropdown dropdown-end ppIcon">
@@ -582,7 +587,7 @@ function Dashboard() {
         </div>
       </dialog>
 
-      <footer className="footer footer-center bg-primary text-primary-content p-10">
+      <footer className="footer footer-center bg-primary text-primary-content px-10 pt-10">
         <aside>
           <svg
             width="50"
