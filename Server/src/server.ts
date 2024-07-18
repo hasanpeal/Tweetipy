@@ -35,6 +35,7 @@ import {
 import "./digest";
 
 env.config();
+
 const app = express();
 const port = process.env.PORT;
 sgMail.setApiKey(process.env.SENDGRID_API_KEY || "");
@@ -65,7 +66,7 @@ app.use(
       secure: true,
       sameSite: "none",
     },
-    // store: MongoStore.create({ mongoUrl: mongoUrl }),
+    store: MongoStore.create({ mongoUrl: mongoUrl }),
   })
 );
 
