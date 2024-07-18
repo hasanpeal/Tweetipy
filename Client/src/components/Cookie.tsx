@@ -13,12 +13,18 @@ function Cookie() {
 
     const handleAccept = () => {
       localStorage.setItem("cookieConsent", "true"); 
-      document.getElementById("my_modal_5")?.classList.add("hidden");
+      const dialog = document.getElementById("my_modal_5");
+      if (dialog instanceof HTMLDialogElement) {
+        dialog.close();
+      }
     };
 
     const handleDecline = () => {
       localStorage.setItem("cookieConsent", "false");
-      document.getElementById("my_modal_5")?.classList.add("hidden");
+      const dialog = document.getElementById("my_modal_5");
+      if (dialog instanceof HTMLDialogElement) {
+        dialog.close();
+      }
     };
 
     return (
