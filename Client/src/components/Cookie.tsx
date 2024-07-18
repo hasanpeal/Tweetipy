@@ -29,26 +29,27 @@ function Cookie() {
                 ✕
               </button>
             </form>
-            <h3 className="font-bold text-lg">Hello!</h3>
             <p className="py-4">
               We use cookies to improve your experience on our site. By using
               our site, you accept our use of cookies
             </p>
-            <div className="buttons">
-              <form>
+            <div className="buttons flex justify-evenly">
+              <div>
                 <button
-                  className="btn btn-active btn-primary flex justify-evenly"
+                  className="btn btn-active btn-primary"
                   onClick={handleAccept}
                 >
                   Accept
                 </button>
+              </div>
+              <div>
                 <button
-                  className="btn btn-active btn-primary flex justify-evenly"
+                  className="btn btn-outline btn-primary"
                   onClick={handleDecline}
                 >
                   Decline
                 </button>
-              </form>
+              </div>
             </div>
           </div>
         </dialog>
