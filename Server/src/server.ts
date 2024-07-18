@@ -54,14 +54,6 @@ app.use(
   })
 );
 
-// Connect to MongoDB Express Session Service
-mongoose.connect(mongoUrl, {
-}).then(() => {
-  console.log("Connected to MongoDB Express Session Service");
-}).catch((err) => {
-  console.error("Error connecting to MongoDB Express Session Service:", err);
-});
-
 // Session setup
 app.use(
   session({
