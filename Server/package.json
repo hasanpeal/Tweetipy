@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "start": "nodemon"
+    "start": "nodemon --config nodemon.json --verbose"
   },
   "keywords": [],
   "author": "",

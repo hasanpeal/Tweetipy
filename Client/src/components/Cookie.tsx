@@ -13,10 +13,12 @@ function Cookie() {
 
     const handleAccept = () => {
       localStorage.setItem("cookieConsent", "true"); 
+      document.getElementById("my_modal_5")?.classList.add("hidden");
     };
 
     const handleDecline = () => {
       localStorage.setItem("cookieConsent", "false");
+      document.getElementById("my_modal_5")?.classList.add("hidden");
     };
 
     return (
@@ -33,7 +35,7 @@ function Cookie() {
               We use cookies to improve your experience on our site. By using
               our site, you accept our use of cookies
             </p>
-            <div className="buttons flex justify-center gap-5">
+            <div className="buttons flex justify-center gap-5 mt-2">
               <div>
                 <button
                   className="btn btn-active btn-primary"
