@@ -7,7 +7,7 @@ import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import { Strategy as TwitterStrategy } from "passport-twitter";
 import session from "express-session";
-import  MongoStore from "connect-mongo";
+import MongoStore from "connect-mongo";
 import mongoose from "mongoose";
 import flash from "connect-flash";
 import cors from "cors";
@@ -37,6 +37,9 @@ import "./digest";
 env.config();
 const app = express();
 const port = process.env.PORT;
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(flash());
 sgMail.setApiKey(process.env.SENDGRID_API_KEY || "");
 
 // const MongoStore = connectMongo(session);
@@ -59,19 +62,17 @@ app.use(
   session({
     secret: process.env.SESSION_SECRET || "secret",
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
     cookie: {
       maxAge: 7 * 24 * 60 * 60 * 1000,
-      // secure: process.env.NODE_ENV === "production", 
+      secure: true,
+      sameSite: "none",
+      // secure: process.env.NODE_ENV === "production",
       // sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     },
     // store: MongoStore.create({ mongoUrl: mongoUrl }),
   })
 );
-
-app.use(passport.initialize());
-app.use(passport.session());
-app.use(flash());
 
 declare module "express-session" {
   interface Session {

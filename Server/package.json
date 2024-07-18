@@ -39,6 +39,7 @@
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
     "@types/connect-flash": "^0.0.40",
+    "@types/cookie-parser": "^1.4.7",
     "@types/express-session": "^1.18.0",
     "@types/html-to-text": "^9.0.4",
     "@types/jest": "^29.5.12",
