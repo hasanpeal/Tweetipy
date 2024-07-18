@@ -182,6 +182,11 @@ const allowedTimes = [9, 12, 15, 18, 21, 24];
 allowedTimes.forEach((time) => {
   const cronTime = `0 ${time === 24 ? 0 : time} * * *`;
   cron.schedule(cronTime, async () => {
+    console.log(
+      `Cron job running at ${new Date().toLocaleString("en-US", {
+        timeZone: "America/New_York",
+      })}`
+    );
     const users = await User.find({ emailTime: time.toString() }).exec();
     users.forEach(
       async (user) => {
