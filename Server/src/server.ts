@@ -8,7 +8,7 @@ import session from "express-session";
 import flash from "connect-flash";
 import cors from "cors";
 import sgMail from "@sendgrid/mail";
-import connectRedis from "connect-redis";
+import RedisStore from "connect-redis";
 import { createClient } from "redis";
 import db from "../database/db";
 import User from "../database/models/user";
@@ -39,7 +39,7 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY || "");
 
 // Redis client setup
 const redisClient = createClient({
-    url: process.env.REDIS
+    url: process.env.REDIS,
 });
 redisClient.on("error", (err) => console.log("Redis Client Error", err));
 
@@ -47,6 +47,11 @@ redisClient.on("error", (err) => console.log("Redis Client Error", err));
   await redisClient.connect();
   console.log("Connected to Redis");
 })();
+
+// Initialize Redis store
+const redisStore = new RedisStore({
+  client: redisClient,
+});
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -63,7 +68,7 @@ app.use(
 // Session setup
 app.use(
   session({
-    store: new (require("connect-redis").default)(redisClient),
+    store: redisStore,
     secret: process.env.SESSION_SECRET || "secret",
     resave: false,
     saveUninitialized: false,

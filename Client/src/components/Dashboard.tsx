@@ -505,12 +505,12 @@ function Dashboard() {
                   onChange={(event) => setTime(event.target.value)}
                 >
                   <option disabled>Pick a time</option>
-                  <option value={"9"}>9:00 am</option>
-                  <option value={"12"}>12:00 pm</option>
-                  <option value={"15"}>3:00 pm</option>
-                  <option value={"18"}>6:00 pm</option>
-                  <option value={"21"}>9:00 pm</option>
-                  <option value={"24"}>12:00 am</option>
+                  <option value={"9"}>9:00 am (EST)</option>
+                  <option value={"12"}>12:00 pm (EST)</option>
+                  <option value={"15"}>3:00 pm (EST)</option>
+                  <option value={"18"}>6:00 pm (EST)</option>
+                  <option value={"21"}>9:00 pm (EST)</option>
+                  <option value={"24"}>12:00 am (EST)</option>
                 </select>
               </label>
               <div className="flex justify-center mt-8 w-full">
