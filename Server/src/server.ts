@@ -7,6 +7,8 @@ import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import { Strategy as TwitterStrategy } from "passport-twitter";
 import session from "express-session";
+const MongoStore = require("connect-mongo")(session);
+import mongoose from "mongoose";
 import flash from "connect-flash";
 import cors from "cors";
 import sgMail from "@sendgrid/mail";
@@ -37,6 +39,9 @@ const app = express();
 const port = process.env.PORT;
 sgMail.setApiKey(process.env.SENDGRID_API_KEY || "");
 
+// const MongoStore = connectMongo(session);
+const mongoUrl: string = `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@express-session.nlcdpl3.mongodb.net/?retryWrites=true&w=majority&appName=express-session`;
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
@@ -49,13 +54,22 @@ app.use(
   })
 );
 
+// Connect to MongoDB Express Session Service
+mongoose.connect(mongoUrl, {
+}).then(() => {
+  console.log("Connected to MongoDB Express Session Service");
+}).catch((err) => {
+  console.error("Error connecting to MongoDB Express Session Service:", err);
+});
+
 // Session setup
 app.use(
   session({
     secret: process.env.SESSION_SECRET || "secret",
     resave: false,
-    saveUninitialized: false,
+    saveUninitialized: true,
     cookie: { maxAge: 7 * 24 * 60 * 60 * 1000 }, // 1 week
+    store: new MongoStore({ url: mongoUrl }),
   })
 );
 

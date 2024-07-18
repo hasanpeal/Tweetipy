@@ -6,6 +6,7 @@ import NewUser from "./components/NewUser"
 import Dashboard from "./components/Dashboard";
 import Home from "./components/Home";
 import About from "./components/About";
+import Cookie from "./components/Cookie";
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
           </Route>
         </Routes>
       </Router>
+      <Cookie />
     </div>
   );
 }
