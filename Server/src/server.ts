@@ -7,7 +7,7 @@ import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import { Strategy as TwitterStrategy } from "passport-twitter";
 import session from "express-session";
-const MongoStore = require("connect-mongo")(session);
+import  MongoStore from "connect-mongo";
 import mongoose from "mongoose";
 import flash from "connect-flash";
 import cors from "cors";
@@ -69,7 +69,7 @@ app.use(
     resave: false,
     saveUninitialized: true,
     cookie: { maxAge: 7 * 24 * 60 * 60 * 1000 }, // 1 week
-    store: new MongoStore({ url: mongoUrl }),
+    store: MongoStore.create({ mongoUrl: mongoUrl }),
   })
 );
 
