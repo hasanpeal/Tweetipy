@@ -33,7 +33,7 @@ function Cookie() {
               We use cookies to improve your experience on our site. By using
               our site, you accept our use of cookies
             </p>
-            <div className="buttons flex justify-evenly">
+            <div className="buttons flex justify-center gap-5">
               <div>
                 <button
                   className="btn btn-active btn-primary"
