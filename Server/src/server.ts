@@ -620,13 +620,18 @@ app.get("/getCookieConsent", (req, res) => {
 });
 
 app.get("/check-session", (req, res) => {
+  console.log("Directed to get route to check session");
   if (req.isAuthenticated()) {
+    console.log("User is authenticated");
     const user = req.user as any;
     const email = user.email;
     const isNewUser = user.newUser;
-
+    console.log(user);
+    console.log(email);
+    console.log(isNewUser);
     res.status(200).json({ isAuthenticated: true, email, newUser: isNewUser });
   } else {
+    console.log("User is not authenticated");
     res.status(200).json({ isAuthenticated: false });
   }
 });

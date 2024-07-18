@@ -84,7 +84,9 @@ function Login() {
           const { email, newUser } = response.data;
           if(newUser) navigate("/newuser", {state: {email}});
           else navigate("/dashboard", { state: { email} });
-        } console.log("Not authenticated");
+        } else {
+          console.log("Not authenticated");
+        }
       } catch (error) {
         console.error("Error checking session", error);
       }
