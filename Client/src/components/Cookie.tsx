@@ -35,15 +35,15 @@ function Cookie() {
               our site, you accept our use of cookies
             </p>
             <div className="buttons">
-              <form className="flex justify-between">
+              <form>
                 <button
-                  className="btn btn-active btn-primary"
+                  className="btn btn-active btn-primary flex justify-evenly"
                   onClick={handleAccept}
                 >
                   Accept
                 </button>
                 <button
-                  className="btn btn-active btn-primary"
+                  className="btn btn-active btn-primary flex justify-evenly"
                   onClick={handleDecline}
                 >
                   Decline
