@@ -613,6 +613,7 @@ app.post("/updateCookieConsent", (req, res) => {
   res.status(200).json({ code: 0, message: "Cookie consent updated" });
 });
 
+
 // Route to check cookie consent
 app.get("/getCookieConsent", (req, res) => {
   const consent = req.session.cookieConsent;
