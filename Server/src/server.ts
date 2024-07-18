@@ -40,7 +40,7 @@ const port = process.env.PORT;
 sgMail.setApiKey(process.env.SENDGRID_API_KEY || "");
 
 // const MongoStore = connectMongo(session);
-const mongoUrl: string = `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@express-session.nlcdpl3.mongodb.net/?retryWrites=true&w=majority&appName=express-session`;
+// const mongoUrl: string = `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@express-session.nlcdpl3.mongodb.net/?retryWrites=true&w=majority&appName=express-session`;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -62,10 +62,10 @@ app.use(
     saveUninitialized: true,
     cookie: {
       maxAge: 7 * 24 * 60 * 60 * 1000,
-      secure: process.env.NODE_ENV === "production", 
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      // secure: process.env.NODE_ENV === "production", 
+      // sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     },
-    store: MongoStore.create({ mongoUrl: mongoUrl }),
+    // store: MongoStore.create({ mongoUrl: mongoUrl }),
   })
 );
 
