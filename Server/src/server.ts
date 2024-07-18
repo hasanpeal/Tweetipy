@@ -39,7 +39,7 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY || "");
 
 // Redis client setup
 const redisClient = createClient({
-    url: process.env.REDIS,
+  url: process.env.REDIS,
 });
 redisClient.on("error", (err) => console.log("Redis Client Error", err));
 
@@ -64,7 +64,6 @@ app.use(
     credentials: true,
   })
 );
-
 
 // Session setup
 app.use(
@@ -177,7 +176,7 @@ passport.serializeUser((user, done) => {
 // Deserialize User
 passport.deserializeUser(async (id, done) => {
   try {
-    const user = await User.findById(id);
+    const user = await User.findById(id).select("email newUser");
     done(null, user);
   } catch (err) {
     done(err);
@@ -604,7 +603,6 @@ app.get("/getNewsletter", async (req, res) => {
   }
 });
 
-
 app.post("/updateCookieConsent", (req, res) => {
   console.log("Directed to POST Route -> /updateCookieConsent");
   const { consent } = req.body;
@@ -621,6 +619,17 @@ app.get("/getCookieConsent", (req, res) => {
   res.status(200).json({ code: 0, consent });
 });
 
+app.get("/check-session", (req, res) => {
+  if (req.isAuthenticated()) {
+    const user = req.user as any;
+    const email = user.email;
+    const isNewUser = user.newUser;
+
+    res.status(200).json({ isAuthenticated: true, email, newUser: isNewUser });
+  } else {
+    res.status(200).json({ isAuthenticated: false });
+  }
+});
 
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);

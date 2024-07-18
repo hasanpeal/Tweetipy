@@ -74,6 +74,26 @@ function Login() {
   };
 
   React.useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_SERVER}/check-session`,
+          { withCredentials: true }
+        );
+        if (response.data.isAuthenticated) {
+          const { email, newUser } = response.data;
+          if(newUser) navigate("/newuser", {state: {email}});
+          else navigate("/dashboard", { state: { email} });
+        } console.log("Not authenticated");
+      } catch (error) {
+        console.error("Error checking session", error);
+      }
+    };
+    checkSession();
+  }, [navigate]);
+
+
+  React.useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const code = params.get("code");
     const message = params.get("message");
