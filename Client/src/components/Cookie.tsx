@@ -35,7 +35,7 @@ function Cookie() {
               our site, you accept our use of cookies
             </p>
             <div className="buttons">
-              <form className="flex justify-evenly">
+              <form className="flex justify-between">
                 <button
                   className="btn btn-active btn-primary"
                   onClick={handleAccept}
