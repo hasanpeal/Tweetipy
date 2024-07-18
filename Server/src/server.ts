@@ -60,7 +60,11 @@ app.use(
     secret: process.env.SESSION_SECRET || "secret",
     resave: false,
     saveUninitialized: true,
-    cookie: { maxAge: 7 * 24 * 60 * 60 * 1000 }, // 1 week
+    cookie: {
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      secure: process.env.NODE_ENV === "production", 
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    },
     store: MongoStore.create({ mongoUrl: mongoUrl }),
   })
 );
@@ -176,6 +180,7 @@ app.get("/x/oauth/signin", passport.authenticate("twitter"));
 
 // Twitter OAuth callback route for sign-in
 app.get("/x/oauth/callback", (req, res, next) => {
+  console.log("Twitter OAuth callback route signin hit");
   passport.authenticate("twitter", (err: Error | null, user: any) => {
     if (err) return next(err);
     if (!user) {
@@ -203,6 +208,7 @@ app.get("/x/oauth/signup", (req, res, next) => {
 
 // Twitter OAuth callback route for sign-up
 app.get("/x/oauth/signup/callback", (req, res, next) => {
+  console.log("Twitter OAuth callback route signup hit");
   passport.authenticate("twitter", async (err: Error | null, user: any) => {
     if (err) return next(err);
     if (!user) {
