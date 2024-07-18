@@ -296,7 +296,7 @@ function Dashboard() {
 
   return (
     <div className="mainDiv">
-      <div className="navbar bg-base- navBox bg-neutral">
+      <div className="navbar bg-base- navBox bg-neutral mb-5 md:mb-0 lg:mb-0">
         <div className="flex-1">
           <a
             className="btn btn-ghost text-xl text-white"
@@ -409,7 +409,7 @@ function Dashboard() {
         </div>
       </div>
 
-      <div className="min-h-screen grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 p-4 gridContent">
+      <div className="min-h-screen grid sm:grid-cols-1 sm:pt-5 md:grid-cols-2 md:p-4 md:m-5 lg:m-5 lg:grid-cols-2 lg:p-4 gap-4 gridContent">
         {/* First Column */}
         <div className="p-4 column1 flex flex-col items-center w-full">
           <article className="prose prose-lg text-center text-white">

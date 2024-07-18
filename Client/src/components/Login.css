@@ -170,7 +170,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin-top: 180px;
+  /* margin-top: 180px; */
   /* font-family: "Open Sans", sans-serif; */
 }
 
@@ -179,7 +179,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin-top: 120px;
+  /* margin-top: 120px; */
   /* font-family: "Open Sans", sans-serif; */
 }
 
