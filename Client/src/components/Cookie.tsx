@@ -3,6 +3,11 @@ import axios from "axios";
 
 function Cookie() {
     useEffect(() => {
+      const localConsent = localStorage.getItem("cookieConsent");
+      if (localConsent !== null) {
+        return;
+      }
+
       const fetchConsent = async () => {
         try {
           const response = await axios.get(
