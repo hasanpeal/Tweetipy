@@ -1,29 +1,54 @@
 import { useEffect } from "react";
+import axios from "axios";
 
 function Cookie() {
     useEffect(() => {
-      const consent = localStorage.getItem("cookieConsent");
-      if (!consent) {
-        const dialog = document.getElementById("my_modal_5");
-        if (dialog instanceof HTMLDialogElement) {
-          dialog.showModal();
+      const fetchConsent = async () => {
+        try {
+          const response = await axios.get(
+            `${import.meta.env.VITE_SERVER}/getCookieConsent`,
+            { withCredentials: true }
+          );
+          if (response.data.consent === undefined) {
+            const dialog = document.getElementById("my_modal_5");
+            if (dialog instanceof HTMLDialogElement) {
+              dialog.showModal();
+            }
+          }
+        } catch (error) {
+          console.error("Error fetching cookie consent:", error);
         }
-      }
+      };
+      fetchConsent();
     }, []);
 
-    const handleAccept = () => {
-      localStorage.setItem("cookieConsent", "true"); 
+    const handleAccept = async () => {
+      localStorage.setItem("cookieConsent", "true");
+      await updateCookieConsent(true);
       const dialog = document.getElementById("my_modal_5");
       if (dialog instanceof HTMLDialogElement) {
         dialog.close();
       }
     };
 
-    const handleDecline = () => {
+    const handleDecline = async () => {
       localStorage.setItem("cookieConsent", "false");
+      await updateCookieConsent(false);
       const dialog = document.getElementById("my_modal_5");
       if (dialog instanceof HTMLDialogElement) {
         dialog.close();
+      }
+    };
+
+    const updateCookieConsent = async (consent: boolean) => {
+      try {
+        await axios.post(
+          `${import.meta.env.VITE_SERVER}/updateCookieConsent`,
+          { consent },
+          { withCredentials: true }
+        );
+      } catch (error) {
+        console.error("Error updating cookie consent:", error);
       }
     };
 

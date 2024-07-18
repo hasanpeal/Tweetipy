@@ -8,6 +8,8 @@ import session from "express-session";
 import flash from "connect-flash";
 import cors from "cors";
 import sgMail from "@sendgrid/mail";
+import connectRedis from "connect-redis";
+import { createClient } from "redis";
 import db from "../database/db";
 import User from "../database/models/user";
 import {
@@ -35,6 +37,17 @@ const app = express();
 const port = process.env.PORT;
 sgMail.setApiKey(process.env.SENDGRID_API_KEY || "");
 
+// Redis client setup
+const redisClient = createClient({
+    url: process.env.REDIS
+});
+redisClient.on("error", (err) => console.log("Redis Client Error", err));
+
+(async () => {
+  await redisClient.connect();
+  console.log("Connected to Redis");
+})();
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
@@ -50,10 +63,11 @@ app.use(
 // Session setup
 app.use(
   session({
+    store: new (require("connect-redis").default)(redisClient),
     secret: process.env.SESSION_SECRET || "secret",
     resave: false,
     saveUninitialized: false,
-    cookie: { maxAge: 7 * 24 * 60 * 60 * 1000 }, 
+    cookie: { maxAge: 7 * 24 * 60 * 60 * 1000 },
   })
 );
 
@@ -64,6 +78,7 @@ app.use(flash());
 declare module "express-session" {
   interface Session {
     signup?: boolean;
+    cookieConsent?: boolean;
   }
 }
 
@@ -582,6 +597,24 @@ app.get("/getNewsletter", async (req, res) => {
     }
   }
 });
+
+
+app.post("/updateCookieConsent", (req, res) => {
+  console.log("Directed to POST Route -> /updateCookieConsent");
+  const { consent } = req.body;
+
+  // Store consent in session
+  req.session.cookieConsent = consent;
+
+  res.status(200).json({ code: 0, message: "Cookie consent updated" });
+});
+
+// Route to check cookie consent
+app.get("/getCookieConsent", (req, res) => {
+  const consent = req.session.cookieConsent;
+  res.status(200).json({ code: 0, consent });
+});
+
 
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);
