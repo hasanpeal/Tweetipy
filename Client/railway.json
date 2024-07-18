@@ -1,4 +1,8 @@
 {
-  "build": "npm install && npm run build",
-  "start": "npm run preview"
+  "build": {
+    "commands": ["npm install", "npm run build"]
+  },
+  "start": {
+    "command": "npm run preview"
+  }
 }
