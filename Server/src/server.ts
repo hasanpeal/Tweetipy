@@ -1,14 +1,10 @@
 import express from "express";
 import bodyParser from "body-parser";
-import { dirname } from "path";
-import { fileURLToPath } from "url";
 import env from "dotenv";
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import { Strategy as TwitterStrategy } from "passport-twitter";
 import session from "express-session";
-import MongoStore from "connect-mongo";
-import mongoose from "mongoose";
 import flash from "connect-flash";
 import cors from "cors";
 import sgMail from "@sendgrid/mail";
@@ -35,13 +31,9 @@ import {
 import "./digest";
 
 env.config();
-
 const app = express();
 const port = process.env.PORT;
 sgMail.setApiKey(process.env.SENDGRID_API_KEY || "");
-
-// const MongoStore = connectMongo(session);
-const mongoUrl: string = `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@express-session.nlcdpl3.mongodb.net/?retryWrites=true&w=majority&appName=express-session`;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -61,12 +53,7 @@ app.use(
     secret: process.env.SESSION_SECRET || "secret",
     resave: false,
     saveUninitialized: false,
-    cookie: {
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-      secure: true,
-      sameSite: "none",
-    },
-    store: MongoStore.create({ mongoUrl: mongoUrl }),
+    cookie: { maxAge: 7 * 24 * 60 * 60 * 1000 }, // 1 week
   })
 );
 
@@ -110,7 +97,7 @@ passport.use(
     {
       consumerKey: process.env.TWITTER_CONSUMER_KEY!,
       consumerSecret: process.env.TWITTER_CONSUMER_SECRET!,
-      callbackURL: `${process.env.SERVER}/x/oauth/callback`,
+      callbackURL: "http://localhost:3001/x/oauth/callback",
       includeEmail: true,
       passReqToCallback: true,
     },
@@ -181,13 +168,12 @@ app.get("/x/oauth/signin", passport.authenticate("twitter"));
 
 // Twitter OAuth callback route for sign-in
 app.get("/x/oauth/callback", (req, res, next) => {
-  console.log("Twitter OAuth callback route signin hit");
   passport.authenticate("twitter", (err: Error | null, user: any) => {
     if (err) return next(err);
     if (!user) {
       const message = req.flash("error")[0] || "Authentication failed";
       return res.redirect(
-        `${process.env.CLIENT}/login?code=1&message=${message}`
+        `http://localhost:3000/login?code=1&message=${message}`
       );
     }
     req.logIn(user, (err) => {
@@ -195,7 +181,7 @@ app.get("/x/oauth/callback", (req, res, next) => {
       const screenName = user.twitterUsername;
       console.log(screenName);
       return res.redirect(
-        `${process.env.CLIENT}/login?code=0&message=Successful%20login&email=${user.email}&screen_name=${screenName}`
+        `http://localhost:3000/login?code=0&message=Successful%20login&email=${user.email}&screen_name=${screenName}`
       );
     });
   })(req, res, next);
@@ -209,19 +195,18 @@ app.get("/x/oauth/signup", (req, res, next) => {
 
 // Twitter OAuth callback route for sign-up
 app.get("/x/oauth/signup/callback", (req, res, next) => {
-  console.log("Twitter OAuth callback route signup hit");
   passport.authenticate("twitter", async (err: Error | null, user: any) => {
     if (err) return next(err);
     if (!user) {
       const message = req.flash("error")[0] || "Authentication failed";
       return res.redirect(
-        `${process.env.CLIENT}/signup?code=1&message=${message}`
+        `http://localhost:3000/signup?code=1&message=${message}`
       );
     }
     const email = user?.email;
     const screenName = user.twitterUsername;
     return res.redirect(
-      `${process.env.CLIENT}/signup?code=0&email=${email}&screen_name=${screenName}&message=Successful%20signup`
+      `http://localhost:3000/signup?code=0&email=${email}&screen_name=${screenName}&message=Successful%20signup`
     );
   })(req, res, next);
 });
