@@ -1,5 +1,7 @@
 # Tweetipy - AI Powered Personalized Twitter/X Content Newsletter and Podcast 💭
 
+![Tweetipy Banner](Client/public/banner.png)
+
 Tweetipy is an AI-powered personalized Twitter/X daily newsletter and podcast application. The app delivers curated content based on the Twitter profiles you choose to follow, ensuring you never miss out on important updates and tweets from your favorite accounts.
 
 ## Features
