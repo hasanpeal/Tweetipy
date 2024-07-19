@@ -338,7 +338,7 @@ function NewUser() {
         </div>
       </dialog>
 
-      <div className="mainContainer pb-48">
+      <div className="mainContainer pb-40 mt-36">
         <div className="card bg-base-100 w-96 shadow-xl cardDiv">
           <article className="prose-2xl headText flex items-center gap-2">
             <span> Tweetipy</span>
