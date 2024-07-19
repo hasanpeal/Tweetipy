@@ -53,6 +53,8 @@ const redisStore = new RedisStore({
   client: redisClient,
 });
 
+app.set('trust proxy', 1); // Trust the first proxy
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
