@@ -177,6 +177,9 @@ async function sendEmail(
     });
 }
 
+console.log(`Server time: ${new Date().toLocaleString()}`);
+
+
 // Automate the email process with cron
 const allowedTimes = [9, 12, 15, 18, 21, 24];
 allowedTimes.forEach((time) => {
