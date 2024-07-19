@@ -120,4 +120,4 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## Contact
 
-For any inquiries or feedback, please contact us at [tweetipyinquires@gmail.com](mailto:tweetipyinquires).
+For any inquiries or feedback, please contact us at [tweetipyinquires@gmail.com](mailto:tweetipyinquires)
