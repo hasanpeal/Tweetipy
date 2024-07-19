@@ -41,7 +41,7 @@ function NewUser() {
         )
         .then(
           () => {
-            console.log("SUCCESS!");
+            // console.log("SUCCESS!");
             toast.success("Email sent successfully");
           },
           (error: { text: unknown }) => {
@@ -54,12 +54,12 @@ function NewUser() {
 
   const fetchData = useCallback(async () => {
     try {
-      console.log("Username of account is ", username);
-      console.log("Data getting fetched");
+      // console.log("Username of account is ", username);
+      // console.log("Data getting fetched");
       const result = await axios.get(`${import.meta.env.VITE_SERVER}/isTwitterUser`, {
         params: { email: email },
       });
-      console.log("Is twitter user? ", result.data.bool);
+      // console.log("Is twitter user? ", result.data.bool);
       if (result.data.bool) {
         setTwitter(true);
         const options = {
@@ -75,14 +75,14 @@ function NewUser() {
         };
         const temp: string[] = [];
         const response = await axios.request(options);
-        if (response) console.log("Response req successful");
+        // if (response) console.log("Response req successful");
         for (let i = 0; i < response.data.following.length; i++) {
           temp.push(response.data.following[i].screen_name);
         }
         setAddAll(temp);
       }
     } catch (err) {
-      console.log("Error fetching isTwitterUser and following in NewUser.tsx");
+      // console.log("Error fetching isTwitterUser and following in NewUser.tsx");
     }
   }, [email, username]);
 
@@ -94,7 +94,7 @@ function NewUser() {
     setEnteredUsers((prevEnteredUsers) => {
       return [...prevEnteredUsers, ...addAll];
     });
-    console.log(enteredUsers);
+    // console.log(enteredUsers);
   }
 
   function handleRemoveAllUser() {
@@ -124,10 +124,10 @@ function NewUser() {
       }
       return result;
     } catch (error) {
-      console.log(
-        "Error fetching data for searchAccount in tweetCall.ts\n",
-        error
-      );
+      // console.log(
+      //   "Error fetching data for searchAccount in tweetCall.ts\n",
+      //   error
+      // );
     }
   }, []);
 
@@ -145,7 +145,7 @@ function NewUser() {
             setData(suggestions);
             cache.current[keyword] = suggestions;
           } else {
-            console.log("Suggestions returned nothing");
+            // console.log("Suggestions returned nothing");
           }
         }
       } else {
@@ -350,7 +350,7 @@ function NewUser() {
             ></img>
             <span> </span>
           </article>
-          <Toaster />
+          {/* <Toaster /> */}
           <div>
             <label className="form-control w-full timeBox">
               &nbsp;Select time for daily newsletter

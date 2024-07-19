@@ -49,7 +49,7 @@ function Dashboard() {
         )
         .then(
           () => {
-            console.log("SUCCESS!");
+            // console.log("SUCCESS!");
             toast.success("Email sent successfully");
           },
           (error: { text: unknown }) => {
@@ -103,7 +103,7 @@ function Dashboard() {
       );
       setNewsletter(capturedNewsletter.data.newsletter);
     } catch (err) {
-      console.log("Error retriving datas in useEffect");
+      // console.log("Error retriving datas in useEffect");
     }
   }, [email]);
 
@@ -134,10 +134,10 @@ function Dashboard() {
       }
       return result;
     } catch (error) {
-      console.log(
-        "Error fetching data for searchAccount in Dashboard.tsx\n",
-        error
-      );
+      // console.log(
+      //   "Error fetching data for searchAccount in Dashboard.tsx\n",
+      //   error
+      // );
     }
   }, []);
 
@@ -155,7 +155,7 @@ function Dashboard() {
             setData(suggestions);
             cache.current[keyword] = suggestions;
           } else {
-            console.log("Suggestions returned nothing");
+            // console.log("Suggestions returned nothing");
           }
         }
       } else {
@@ -209,7 +209,7 @@ function Dashboard() {
             toast.error("Error updating profile");
         }
     } catch (err) {
-        console.log("Error in updateInfos in Dashboard.tsx");
+        // console.log("Error in updateInfos in Dashboard.tsx");
     }
   }
 
@@ -223,7 +223,7 @@ function Dashboard() {
             toast.error("Logout unsuccessful");
         }
     } catch (err) {
-        console.log("Error in handleLogout function in Dashboard.tsx");
+        // console.log("Error in handleLogout function in Dashboard.tsx");
     }
   }
 
@@ -244,13 +244,13 @@ function Dashboard() {
         toast.error("Error deleting account");
       }
     } catch (err) {
-      console.log("Error in handleDelete in Dashboard.tsx");
+      // console.log("Error in handleDelete in Dashboard.tsx");
     }
   }
 
   async function handleUpdateUsernames() {
     try {
-        console.log(enteredUsers);
+        // console.log(enteredUsers);
       setShowUpdate1(false);
       setLoad(true);
       const result = await axios.post(`${import.meta.env.VITE_SERVER}/updateProfile`, {
@@ -263,7 +263,7 @@ function Dashboard() {
         toast.success("Profile lists got updated");
       } else toast.error("Error updating profiles");
     } catch (error) {
-      console.log("Error updating usernames in Dashboard.tsx");
+      // console.log("Error updating usernames in Dashboard.tsx");
       toast.error("Failed to update usernames");
     }
   }
@@ -289,7 +289,7 @@ function Dashboard() {
         toast.success("Time update successful");
       } else toast.error("Error updating time");
     } catch (error) {
-      console.log("Error updating time in Dashboard.tsx");
+      // console.log("Error updating time in Dashboard.tsx");
       toast.error("Failed to update time");
     }
   }

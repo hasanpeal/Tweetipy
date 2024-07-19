@@ -24,7 +24,7 @@ function Home() {
         )
         .then(
           () => {
-            console.log("SUCCESS!");
+            // console.log("SUCCESS!");
             toast.success("Email sent successfully");
           },
           (error: { text: unknown }) => {

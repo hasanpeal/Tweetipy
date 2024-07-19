@@ -58,7 +58,7 @@ function Login() {
         )
         .then(
           () => {
-            console.log("SUCCESS!");
+            // console.log("SUCCESS!");
             toast.success("Email sent successfully");
           },
           (error: { text: unknown }) => {
@@ -81,12 +81,12 @@ function Login() {
           { withCredentials: true }
         );
         if (response.data.isAuthenticated) {
-          console.log("Authenticated:", response.data);
+          // console.log("Authenticated:", response.data);
           const { email, newUser } = response.data;
           if(newUser) navigate("/newuser", {state: {email}});
           else navigate("/dashboard", { state: { email} });
         } else {
-          console.log("Not authenticated");
+          // console.log("Not authenticated");
         }
       } catch (error) {
         console.error("Error checking session", error);
@@ -118,7 +118,7 @@ function Login() {
               params: { email: email },
             }
           );
-          console.log(res.data.bool);
+          // console.log(res.data.bool);
           if (res.data.bool) navigate("/newuser", { state: { email, username } });
           else navigate("/dashboard", { state: { email, username } });
         };
@@ -140,11 +140,11 @@ function Login() {
         }
       );
       const code = result.data.code;
-      console.log("Email exist code: ", code);
+      // console.log("Email exist code: ", code);
       if (code === 0) return false;
       else true;
     } catch (err) {
-      console.log("Error in emailAlreadyExist function");
+      // console.log("Error in emailAlreadyExist function");
     }
   }
 
@@ -159,8 +159,8 @@ function Login() {
           }
         );
         const { code, message } = result.data;
-        console.log(code);
-        console.log(message);
+        // console.log(code);
+        // console.log(message);
         if (code === 0) {
           toast.success(message);
           setLoad(true);
@@ -198,9 +198,9 @@ function Login() {
       );
       setGeneratedOtp(result.data.otp);
     } catch (error) {
-      console.log("Error calling http://localhost:3000/sentOTP on login.tsx");
+      // console.log("Error calling http://localhost:3000/sentOTP on login.tsx");
     }
-    console.log("OTP generated");
+    // console.log("OTP generated");
   };
 
   const handleOtpChange = (index: number, value: string) => {
@@ -358,7 +358,7 @@ function Login() {
           setVerified(false);
         }, 3000);
       }
-      console.log("OTP entered:", otp.join(""));
+      // console.log("OTP entered:", otp.join(""));
     }
   };
 
@@ -367,8 +367,8 @@ function Login() {
   };
 
   async function handleSend() {
-    console.log("Handle send function triggered");
-    console.log(formErrors);
+    // console.log("Handle send function triggered");
+    // console.log(formErrors);
     if (await validateEmail()) {
       generateOtp();
       setShowOtp(true);
@@ -389,7 +389,7 @@ function Login() {
           newPassword: confirmNewPassword,
         });
         if (result.data.code === 0) {
-          console.log("Success resetting password");
+          // console.log("Success resetting password");
           toast.success("Password reset successful");
           setLoad2(true);
           setTimeout(() => {
@@ -397,7 +397,7 @@ function Login() {
           }, 1000);
         }
       } catch (err) {
-        console.log("Error resetting password in Login.tsx");
+        // console.log("Error resetting password in Login.tsx");
       }
     } else {
       setTimeout(() => {
@@ -537,7 +537,7 @@ function Login() {
             ></img>
             <span> </span>
           </article>
-          <Toaster />
+          {/* <Toaster /> */}
           <div>
             {forget && !passFlag && (
               <label className="input input-bordered flex items-center gap-2">

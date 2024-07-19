@@ -50,7 +50,7 @@ const Signup: React.FC = () => {
           )
           .then(
             () => {
-              console.log("SUCCESS!");
+              // console.log("SUCCESS!");
               toast.success("Email sent successfully");
             },
             (error: { text: unknown }) => {
@@ -118,11 +118,11 @@ const Signup: React.FC = () => {
         params: { email: email },
       });
       const code = result.data.code;
-      console.log(code);
+      // console.log(code);
       if (code === 0) return true;
       else false;
     } catch (err) {
-      console.log("Error in emailAlreadyExist function");
+      // console.log("Error in emailAlreadyExist function");
     }
   }
 
@@ -217,7 +217,7 @@ const Signup: React.FC = () => {
             navigate("/newuser", {state: {email}});
           }
         } catch (error) {
-          console.log("Error registering user froms signup.tsx");
+          // console.log("Error registering user froms signup.tsx");
         }
         
       } else {
@@ -226,11 +226,11 @@ const Signup: React.FC = () => {
           setVerified(false);
         }, 3000);
       }
-      console.log("OTP entered:", otp.join(""));
-      console.log("\nFirst name:", firstName);
-      console.log("\nLast name:", lastName);
-      console.log("\nEmail:", email);
-      console.log("\nPassword:", password);
+      // console.log("OTP entered:", otp.join(""));
+      // console.log("\nFirst name:", firstName);
+      // console.log("\nLast name:", lastName);
+      // console.log("\nEmail:", email);
+      // console.log("\nPassword:", password);
     }
   };
 
@@ -241,9 +241,9 @@ const Signup: React.FC = () => {
       });
       setGeneratedOtp(result.data.otp);
     } catch (error) {
-      console.log("Error calling http://localhost:3000/sentOTP on signup.tsx");
+      // console.log("Error calling http://localhost:3000/sentOTP on signup.tsx");
     }
-    console.log("OTP generated");
+    // console.log("OTP generated");
   };
 
   return (
@@ -373,7 +373,7 @@ const Signup: React.FC = () => {
             ></img>
             <span></span>
           </article>
-          <Toaster />
+          {/* <Toaster /> */}
           <div>
             <label className="input input-bordered flex items-center gap-2">
               <input
