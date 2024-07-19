@@ -252,7 +252,6 @@ app.post("/login", (req, res, next) => {
   })(req, res, next);
 });
 
-
 // POST Route for logout
 app.post("/logout", (req, res) => {
   console.log("Directed to POST Route -> /logout");
