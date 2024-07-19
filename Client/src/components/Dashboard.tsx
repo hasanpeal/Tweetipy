@@ -505,6 +505,8 @@ function Dashboard() {
                   onChange={(event) => setTime(event.target.value)}
                 >
                   <option disabled>Pick a time</option>
+                  <option value={"3"}>3:00 am (EST)</option>
+                  <option value={"6"}>6:00 am (EST)</option>
                   <option value={"9"}>9:00 am (EST)</option>
                   <option value={"12"}>12:00 pm (EST)</option>
                   <option value={"15"}>3:00 pm (EST)</option>

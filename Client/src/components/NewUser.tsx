@@ -338,7 +338,7 @@ function NewUser() {
         </div>
       </dialog>
 
-      <div className="mainContainer pb-40 mt-36">
+      <div className="mainContainer pb-48 mt-44">
         <div className="card bg-base-100 w-96 shadow-xl cardDiv">
           <article className="prose-2xl headText flex items-center gap-2">
             <span> Tweetipy</span>
@@ -360,6 +360,8 @@ function NewUser() {
                 onChange={(event) => setTime(event.target.value)}
               >
                 <option disabled>Pick a time</option>
+                <option value={"3"}>3:00 am (EST)</option>
+                <option value={"6"}>6:00 am (EST)</option>
                 <option value={"9"}>9:00 am (EST)</option>
                 <option value={"12"}>12:00 pm (EST)</option>
                 <option value={"15"}>3:00 pm (EST)</option>

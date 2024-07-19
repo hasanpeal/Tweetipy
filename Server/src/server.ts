@@ -37,8 +37,6 @@ const app = express();
 const port = process.env.PORT;
 sgMail.setApiKey(process.env.SENDGRID_API_KEY || "");
 
-console.log(`Server time: ${new Date().toLocaleString()}`);
-
 // Redis client setup
 const redisClient = createClient({
   url: process.env.REDIS,
