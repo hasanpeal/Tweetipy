@@ -179,11 +179,8 @@ async function sendEmail(
 
 // Automate the email process with cron
 const allowedTimes = [9, 12, 15, 18, 21, 24];
-const offset = 4; 
 allowedTimes.forEach((time) => {
-  // const cronTime = `0 ${time === 24 ? 0 : time} * * *`;
-  const adjustedTime = (time - offset + 24) % 24;
-  const cronTime = `0 ${adjustedTime} * * *`;
+  const cronTime = `0 ${time === 24 ? 0 : time} * * *`;
   cron.schedule(cronTime, async () => {
     console.log(
       `Cron job running at ${new Date().toLocaleString("en-US", {

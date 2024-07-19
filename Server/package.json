@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "start": "nodemon --config nodemon.json --verbose"
+    "start": "TZ='America/New_York' nodemon --config nodemon.json --verbose"
   },
   "keywords": [],
   "author": "",
