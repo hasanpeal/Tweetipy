@@ -81,6 +81,7 @@ function Login() {
           { withCredentials: true }
         );
         if (response.data.isAuthenticated) {
+          console.log("Authenticated:", response.data);
           const { email, newUser } = response.data;
           if(newUser) navigate("/newuser", {state: {email}});
           else navigate("/dashboard", { state: { email} });
