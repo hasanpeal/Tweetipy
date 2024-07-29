@@ -141,9 +141,9 @@ function Login() {
       );
       const code = result.data.code;
       // console.log("Email exist code: ", code);
-      if (code === 0) return false;
-      else true;
+      return code !== 0;
     } catch (err) {
+      return true;
       // console.log("Error in emailAlreadyExist function");
     }
   }
@@ -260,9 +260,12 @@ function Login() {
       setTimeout(() => {
         setFormErrors((prevErrors) => ({ ...prevErrors, email: "" }));
       }, 3000);
-    } else if (await emailDoesntExist()) {
-      errors.email = "Email isn't registered";
-      isValid = false;
+    } else {
+      const exist = await emailDoesntExist();
+      if(exist) {
+        errors.email = "Email isn't registered";
+        isValid = false;
+      }
       setTimeout(() => {
         setFormErrors((prevErrors) => ({ ...prevErrors, email: "" }));
       }, 3000);
@@ -645,7 +648,7 @@ function Login() {
               </svg>
               <input
                 type="email"
-                className={`grow ${formErrors.email ? "border-red-500" : ""}`}
+                className={`grow ${emailErrors.email ? "border-red-500" : ""}`}
                 placeholder="Email"
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
