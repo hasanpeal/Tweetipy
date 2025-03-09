@@ -37,21 +37,21 @@ const app = express();
 const port = process.env.PORT;
 sgMail.setApiKey(process.env.SENDGRID_API_KEY || "");
 
-// Redis client setup
-const redisClient = createClient({
-  url: process.env.REDIS,
-});
-redisClient.on("error", (err) => console.log("Redis Client Error", err));
+// // Redis client setup
+// const redisClient = createClient({
+//   url: process.env.REDIS,
+// });
+// redisClient.on("error", (err) => console.log("Redis Client Error", err));
 
-(async () => {
-  await redisClient.connect();
-  console.log("Connected to Redis");
-})();
+// (async () => {
+//   await redisClient.connect();
+//   console.log("Connected to Redis");
+// })();
 
-// Initialize Redis store
-const redisStore = new RedisStore({
-  client: redisClient,
-});
+// // Initialize Redis store
+// const redisStore = new RedisStore({
+//   client: redisClient,
+// });
 
 app.set('trust proxy', 1); // Trust the first proxy
 
@@ -70,7 +70,7 @@ app.use(
 // Session setup
 app.use(
   session({
-    store: redisStore,
+    // store: redisStore,
     secret: process.env.SESSION_SECRET || "secret",
     resave: false,
     saveUninitialized: false,
